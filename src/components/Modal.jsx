@@ -1,118 +1,178 @@
 import { useEffect } from 'react';
+import { Check, Play, Plus, Star, Tv, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { IMG_BASE } from '../services/tmdb';
 import { useApp } from '../context/AppContext';
-import { PLACEHOLDER_COLORS } from '../services/mockData';
+import {
+  getGenreNames,
+  getReleaseYear,
+  getRuntimeLabel,
+} from '../utils/contentExperience';
+import { getBackdropArtwork } from '../utils/streamArtwork';
+import { cx } from '../admin/utils/cx';
 
 export default function Modal({ movie, onClose }) {
   const navigate = useNavigate();
-  const { addToWatchlist, removeFromWatchlist, isInWatchlist } = useApp();
-
-  const inWatchlist = movie ? isInWatchlist(movie.id) : false;
-  const colorClass = movie ? PLACEHOLDER_COLORS[movie.id % PLACEHOLDER_COLORS.length] : '';
-  const backdropUrl = movie?.backdrop_path
-    ? `${IMG_BASE}/w780${movie.backdrop_path}`
-    : null;
+  const { addToWatchlist, removeFromWatchlist, isInWatchlist, isKidsMode } = useApp();
 
   useEffect(() => {
-    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
-    document.addEventListener('keydown', onKey);
+    const onKeyDown = (event) => {
+      if (event.key === 'Escape') onClose();
+    };
+
     document.body.style.overflow = 'hidden';
+    document.addEventListener('keydown', onKeyDown);
+
     return () => {
-      document.removeEventListener('keydown', onKey);
       document.body.style.overflow = '';
+      document.removeEventListener('keydown', onKeyDown);
     };
   }, [onClose]);
 
   if (!movie) return null;
 
+  const isSeries = movie.type === 'series';
+  const inWatchlist = isInWatchlist(movie.id);
+  const watchPath = isSeries
+    ? `/watch/${movie.id}?type=series&season=1&episode=1`
+    : `/watch/${movie.id}`;
+  const detailPath = isSeries ? `/series/${movie.id}` : `/movie/${movie.id}`;
+
   const toggleWatchlist = () => {
-    if (inWatchlist) removeFromWatchlist(movie.id);
-    else addToWatchlist(movie);
+    if (inWatchlist) {
+      removeFromWatchlist(movie.id);
+      return;
+    }
+
+    addToWatchlist(movie);
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      onClick={onClose}
-    >
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+    <div className="fixed inset-0 z-[80] flex items-center justify-center p-4 sm:p-6" onClick={onClose}>
+      <div className="absolute inset-0 bg-slate-950/78 backdrop-blur-xl" />
 
       <div
-        className="relative bg-gray-900 rounded-xl overflow-hidden w-full max-w-2xl shadow-2xl z-10 animate-in fade-in zoom-in-95 duration-200"
-        onClick={(e) => e.stopPropagation()}
+        className="relative z-10 w-full max-w-4xl overflow-hidden rounded-[36px] border border-white/10 bg-[linear-gradient(180deg,rgba(2,6,23,0.98),rgba(15,23,42,0.96))] shadow-[0_50px_120px_-48px_rgba(15,23,42,0.98)]"
+        onClick={(event) => event.stopPropagation()}
       >
         <button
+          type="button"
           onClick={onClose}
-          className="absolute top-3 right-3 z-20 w-8 h-8 bg-black/50 hover:bg-black/80 rounded-full flex items-center justify-center text-white transition-colors"
+          className="absolute right-5 top-5 z-20 flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-black/35 text-white transition-all duration-300 ease-in-out hover:border-white/20 hover:bg-black/55"
+          aria-label="Close preview"
         >
-          <svg className="w-4 h-4 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
+          <X className="h-4 w-4" />
         </button>
 
-        <div className="relative h-52 overflow-hidden">
-          {backdropUrl ? (
-            <img src={backdropUrl} alt={movie.title} className="w-full h-full object-cover" />
-          ) : (
-            <div className={`w-full h-full bg-gradient-to-br ${colorClass}`} />
-          )}
-          <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent" />
+        <div className="relative h-[300px] overflow-hidden sm:h-[360px]">
+          <img
+            src={getBackdropArtwork(movie, isKidsMode)}
+            alt={movie.title}
+            className="h-full w-full object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.08),rgba(2,6,23,0.28)_36%,rgba(2,6,23,0.92)_100%)]" />
 
-          <div className="absolute bottom-4 left-5">
-            <h3 className="text-white text-2xl font-bold drop-shadow">{movie.title}</h3>
+          <div className="absolute bottom-6 left-6 right-6 sm:bottom-8 sm:left-8 sm:right-8">
+            <div className="flex flex-wrap items-center gap-3">
+              <span
+                className={cx(
+                  'inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-[11px] font-semibold uppercase tracking-[0.24em]',
+                  isSeries
+                    ? 'border-fuchsia-300/25 bg-fuchsia-300/14 text-fuchsia-100'
+                    : 'border-sky-300/25 bg-sky-300/14 text-sky-100',
+                )}
+              >
+                {isSeries ? <Tv className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5 fill-current" />}
+                {isSeries ? 'Series' : 'Movie'}
+              </span>
+
+              {movie.vote_average && (
+                <span className="inline-flex items-center gap-2 rounded-full border border-amber-300/25 bg-amber-300/12 px-3.5 py-2 text-sm font-semibold text-amber-50">
+                  <Star className="h-4 w-4 fill-current" />
+                  {movie.vote_average.toFixed(1)}
+                </span>
+              )}
+            </div>
+
+            <h3 className="admin-display mt-5 text-3xl font-semibold text-white sm:text-4xl">
+              {movie.title}
+            </h3>
           </div>
         </div>
 
-        <div className="p-5 space-y-4">
-          <div className="flex items-center gap-4 text-sm text-gray-400">
-            <span className="text-yellow-400 font-semibold flex items-center gap-1">
-              <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20">
-                <path d="M10 15l-5.878 3.09 1.122-6.545L.488 6.91l6.561-.955L10 0l2.951 5.955 6.561.955-4.756 4.635 1.122 6.545z" />
-              </svg>
-              {movie.vote_average?.toFixed(1)}
-            </span>
-            <span>{movie.release_date?.slice(0, 4)}</span>
-            <div className="flex gap-2">
-              {movie.genres?.slice(0, 2).map((g) => (
-                <span key={g.id} className="bg-gray-800 text-gray-300 text-xs px-2 py-0.5 rounded-full">
-                  {g.name}
-                </span>
-              ))}
+        <div className="grid gap-8 p-6 sm:p-8 lg:grid-cols-[minmax(0,1fr)_280px]">
+          <div>
+            <div className="flex flex-wrap gap-2">
+              {[getReleaseYear(movie), getRuntimeLabel(movie), ...getGenreNames(movie).slice(0, 2)]
+                .filter(Boolean)
+                .map((item) => (
+                  <span
+                    key={item}
+                    className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-semibold text-slate-300"
+                  >
+                    {item}
+                  </span>
+                ))}
+            </div>
+
+            <p className="mt-5 text-sm leading-7 text-slate-300 sm:text-base">
+              {movie.overview}
+            </p>
+
+            <div className="mt-6 flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  navigate(watchPath);
+                  onClose();
+                }}
+                className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:bg-slate-100"
+              >
+                <Play className="h-4 w-4 fill-current" />
+                Play now
+              </button>
+
+              <button
+                type="button"
+                onClick={toggleWatchlist}
+                className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/[0.05] px-5 py-3 text-sm font-semibold text-white transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:bg-white/[0.1]"
+              >
+                {inWatchlist ? <Check className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
+                {inWatchlist ? 'In Watchlist' : 'Add to Watchlist'}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  navigate(detailPath);
+                  onClose();
+                }}
+                className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-transparent px-5 py-3 text-sm font-semibold text-slate-300 transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:border-white/20 hover:text-white"
+              >
+                Full details
+              </button>
             </div>
           </div>
 
-          <p className="text-gray-300 text-sm leading-relaxed line-clamp-3">{movie.overview}</p>
-
-          <div className="flex gap-3 pt-1">
-            <button
-              onClick={() => { navigate(`/watch/${movie.id}`); onClose(); }}
-              className="flex items-center gap-2 bg-white hover:bg-gray-200 text-black font-semibold px-5 py-2 rounded-lg transition-all duration-200 hover:scale-105 active:scale-95 text-sm"
-            >
-              <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-              Play
-            </button>
-
-            <button
-              onClick={toggleWatchlist}
-              className={`flex items-center gap-2 font-semibold px-5 py-2 rounded-lg border text-sm transition-all duration-200 hover:scale-105 active:scale-95 ${
-                inWatchlist
-                  ? 'bg-blue-600 border-blue-600 text-white'
-                  : 'bg-transparent border-white/20 text-white hover:bg-white/10'
-              }`}
-            >
-              {inWatchlist ? 'In Watchlist' : '+ Watchlist'}
-            </button>
-
-            <button
-              onClick={() => { navigate(`/movie/${movie.id}`); onClose(); }}
-              className="ml-auto text-gray-400 hover:text-white text-sm underline transition-colors"
-            >
-              More Info
-            </button>
-          </div>
+          <aside className="rounded-[28px] border border-white/10 bg-white/[0.04] p-5">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-500">
+              Preview Notes
+            </p>
+            <div className="mt-5 space-y-3">
+              {[
+                { label: 'Type', value: isSeries ? 'Series' : 'Movie' },
+                { label: 'Primary genre', value: getGenreNames(movie)[0] || 'Featured' },
+                { label: 'Experience', value: isKidsMode ? 'Kids mode filtered' : 'Full catalogue' },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="rounded-[22px] border border-white/10 bg-slate-950/55 px-4 py-3"
+                >
+                  <p className="text-xs uppercase tracking-[0.22em] text-slate-500">{item.label}</p>
+                  <p className="mt-2 text-sm font-semibold text-white">{item.value}</p>
+                </div>
+              ))}
+            </div>
+          </aside>
         </div>
       </div>
     </div>

@@ -83,6 +83,86 @@
 }
 
 @layer components {
+  .stream-shell {
+    position: relative;
+    overflow: hidden;
+    transition:
+      background 400ms ease-in-out,
+      color 300ms ease-in-out;
+  }
+
+  .stream-shell-dark {
+    background:
+      radial-gradient(circle at top left, rgba(139, 92, 246, 0.18), transparent 24%),
+      radial-gradient(circle at top right, rgba(236, 72, 153, 0.14), transparent 22%),
+      linear-gradient(180deg, #020617 0%, #050814 16%, #05070d 48%, #020617 100%);
+    color: #f8fafc;
+  }
+
+  .stream-shell-light {
+    background:
+      radial-gradient(circle at top left, rgba(56, 189, 248, 0.16), transparent 24%),
+      radial-gradient(circle at top right, rgba(168, 85, 247, 0.12), transparent 22%),
+      linear-gradient(180deg, #eef4ff 0%, #e7eefc 36%, #f8fbff 100%);
+    color: #0f172a;
+  }
+
+  .stream-shell-kids {
+    background:
+      radial-gradient(circle at top left, rgba(34, 197, 94, 0.18), transparent 26%),
+      radial-gradient(circle at top right, rgba(56, 189, 248, 0.18), transparent 24%),
+      radial-gradient(circle at bottom right, rgba(251, 191, 36, 0.16), transparent 22%),
+      linear-gradient(180deg, #081327 0%, #102445 22%, #122d4e 54%, #0b1630 100%);
+    color: #f8fafc;
+  }
+
+  .stream-shell::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.5;
+    background:
+      linear-gradient(180deg, rgba(2, 6, 23, 0.05), transparent 20%, rgba(2, 6, 23, 0.35)),
+      radial-gradient(circle at center, rgba(255, 255, 255, 0.03), transparent 60%);
+  }
+
+  .stream-glass {
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 24px 64px -36px rgba(15, 23, 42, 0.94);
+  }
+
+  .stream-card {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(18px);
+    box-shadow: 0 24px 64px -36px rgba(15, 23, 42, 0.92);
+  }
+
+  .stream-skeleton {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(90deg, rgba(15, 23, 42, 0.85), rgba(30, 41, 59, 0.74), rgba(15, 23, 42, 0.85));
+  }
+
+  .stream-skeleton::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    animation: admin-shimmer 1.6s linear infinite;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+    transform: translateX(-100%);
+  }
+
+  .theme-light .stream-card,
+  .theme-light .stream-glass {
+    border-color: rgba(15, 23, 42, 0.08);
+    background: rgba(255, 255, 255, 0.72);
+    box-shadow: 0 30px 70px -46px rgba(59, 130, 246, 0.35);
+  }
+
   .admin-shell {
     position: relative;
     overflow: hidden;
@@ -190,6 +270,18 @@
   0% {
     opacity: 0;
     transform: translateY(18px) scale(0.985);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes stream-fade-up {
+  0% {
+    opacity: 0;
+    transform: translateY(16px) scale(0.985);
   }
 
   100% {

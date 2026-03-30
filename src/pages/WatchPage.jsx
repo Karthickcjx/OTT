@@ -1,117 +1,134 @@
-import { useEffect, useState, useCallback } from 'react';
-import { useParams, useSearchParams, Link, useNavigate } from 'react-router-dom';
+import { useCallback, useEffect, useState } from 'react';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
+import { ArrowLeft, PlayCircle } from 'lucide-react';
 import { useContentDetails } from '../hooks/useContentDetails';
 import { useApp } from '../context/AppContext';
 import VideoPlayer from '../components/VideoPlayer';
 import EpisodeList from '../components/EpisodeList';
 import MovieRow from '../components/MovieRow';
 import Loader from '../components/Loader';
+import { cx } from '../admin/utils/cx';
 
 function MovieWatchLayout({ content, similar }) {
   return (
     <>
-      <div className="bg-gray-900 rounded-xl overflow-hidden shadow-2xl">
+      <div className="overflow-hidden rounded-[32px] border border-white/10 bg-slate-950/72 shadow-[0_36px_90px_-52px_rgba(15,23,42,0.98)]">
         <VideoPlayer title={content.title} videoUrl={content.videoUrl} />
       </div>
 
-      <div className="mt-5">
-        <h1 className="text-white text-xl font-bold">{content.title}</h1>
-        <div className="flex items-center gap-4 text-sm text-gray-400 mt-1.5">
-          <span>{(content.release_date ?? content.releaseYear + '-01-01')?.slice(0, 4)}</span>
+      <div className="mt-6">
+        <h1 className="admin-display text-2xl font-semibold text-white sm:text-3xl">{content.title}</h1>
+        <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-slate-400">
+          <span>{(content.release_date || `${content.releaseYear || ''}-01-01`).slice(0, 4)}</span>
           {content.runtime && <span>{content.runtime} min</span>}
-          <span className="text-yellow-400 font-semibold">★ {content.vote_average?.toFixed(1)}</span>
+          <span className="font-semibold text-amber-300">Rating {content.vote_average?.toFixed(1) || 'N/A'}</span>
         </div>
-        <p className="text-gray-400 mt-2.5 text-sm leading-relaxed max-w-2xl line-clamp-2">{content.overview}</p>
+        <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-400 sm:text-base">{content.overview}</p>
       </div>
 
       {similar.length > 0 && (
-        <div className="mt-8">
-          <MovieRow title="Up Next" movies={similar} />
+        <div className="mt-10">
+          <MovieRow title="Up Next" subtitle="Keep the momentum going with related picks." movies={similar} />
         </div>
       )}
     </>
   );
 }
 
-function SeriesWatchLayout({ content, activeSeason, activeEpisode, onEpisodeSelect, onSeasonChange, similar }) {
-  const navigate = useNavigate();
-
-  const currentSeasonObj = content.seasons?.find((s) => s.seasonNumber === activeSeason);
-  const currentEpObj = currentSeasonObj?.episodes?.find((e) => e.episodeNumber === activeEpisode);
+function SeriesWatchLayout({
+  content,
+  activeSeason,
+  activeEpisode,
+  onEpisodeSelect,
+  onSeasonChange,
+  similar,
+  autoplay,
+}) {
+  const currentSeasonObj = content.seasons?.find((season) => season.seasonNumber === activeSeason);
+  const currentEpisode = currentSeasonObj?.episodes?.find((episode) => episode.episodeNumber === activeEpisode);
 
   const handleAutoplayNext = useCallback(() => {
     if (!currentSeasonObj) return;
-    const nextEp = currentSeasonObj.episodes.find((e) => e.episodeNumber === activeEpisode + 1);
-    if (nextEp) {
-      onEpisodeSelect(activeSeason, nextEp.episodeNumber);
+
+    const nextEpisode = currentSeasonObj.episodes.find(
+      (episode) => episode.episodeNumber === activeEpisode + 1,
+    );
+
+    if (nextEpisode) {
+      onEpisodeSelect(activeSeason, nextEpisode.episodeNumber);
       return;
     }
-    // Try next season
-    const nextSeason = content.seasons?.find((s) => s.seasonNumber === activeSeason + 1);
+
+    const nextSeason = content.seasons?.find((season) => season.seasonNumber === activeSeason + 1);
     if (nextSeason?.episodes?.[0]) {
       onEpisodeSelect(nextSeason.seasonNumber, nextSeason.episodes[0].episodeNumber);
     }
-  }, [activeSeason, activeEpisode, currentSeasonObj, content.seasons, onEpisodeSelect]);
+  }, [activeEpisode, activeSeason, content.seasons, currentSeasonObj, onEpisodeSelect]);
 
-  const title = currentEpObj
-    ? `${content.title} · S${activeSeason}E${activeEpisode} – ${currentEpObj.title || `Episode ${activeEpisode}`}`
+  const episodeTitle = currentEpisode
+    ? `${content.title} | S${activeSeason}E${activeEpisode} | ${currentEpisode.title || `Episode ${activeEpisode}`}`
     : content.title;
 
+  const nextEpisode = currentSeasonObj?.episodes.find(
+    (episode) => episode.episodeNumber === activeEpisode + 1,
+  );
+  const nextSeason = !nextEpisode && content.seasons?.find(
+    (season) => season.seasonNumber === activeSeason + 1,
+  );
+  const autoplayLabel = nextEpisode
+    ? `Next: E${nextEpisode.episodeNumber} | ${nextEpisode.title || `Episode ${nextEpisode.episodeNumber}`}`
+    : nextSeason?.episodes?.[0]
+    ? `Next: Season ${nextSeason.seasonNumber} | Episode 1`
+    : null;
+
   return (
-    <div className="flex flex-col xl:flex-row gap-5">
-      {/* Main player column */}
-      <div className="flex-1 min-w-0">
-        <div className="bg-gray-900 rounded-xl overflow-hidden shadow-2xl">
+    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
+      <div className="min-w-0">
+        <div className="overflow-hidden rounded-[32px] border border-white/10 bg-slate-950/72 shadow-[0_36px_90px_-52px_rgba(15,23,42,0.98)]">
           <VideoPlayer
-            title={title}
-            videoUrl={currentEpObj?.videoUrl}
-            onEnded={handleAutoplayNext}
+            title={episodeTitle}
+            videoUrl={currentEpisode?.videoUrl}
+            onEnded={autoplay ? handleAutoplayNext : undefined}
           />
         </div>
 
-        <div className="mt-4">
-          <div className="flex items-center gap-2 text-xs text-gray-500 mb-1">
-            <span className="bg-purple-600/20 text-purple-300 border border-purple-600/20 px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider">
+        <div className="mt-6">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="rounded-full border border-fuchsia-300/25 bg-fuchsia-300/14 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.24em] text-fuchsia-100">
               Series
             </span>
-            <span>Season {activeSeason} · Episode {activeEpisode}</span>
+            <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-semibold text-slate-300">
+              Season {activeSeason} | Episode {activeEpisode}
+            </span>
+            {autoplay && autoplayLabel && (
+              <button
+                type="button"
+                onClick={handleAutoplayNext}
+                className="inline-flex items-center gap-2 rounded-full border border-sky-300/20 bg-sky-300/12 px-3 py-1.5 text-xs font-semibold text-sky-100 transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:border-sky-300/30 hover:bg-sky-300/18"
+              >
+                <PlayCircle className="h-3.5 w-3.5" />
+                {autoplayLabel}
+              </button>
+            )}
           </div>
-          <h1 className="text-white text-xl font-bold">{title}</h1>
-          {currentEpObj?.duration && (
-            <p className="text-gray-500 text-sm mt-1">{currentEpObj.duration} min</p>
+
+          <h1 className="admin-display mt-4 text-2xl font-semibold text-white sm:text-3xl">
+            {episodeTitle}
+          </h1>
+          {currentEpisode?.duration && (
+            <p className="mt-2 text-sm text-slate-500">{currentEpisode.duration} min</p>
           )}
-          <p className="text-gray-400 mt-2 text-sm leading-relaxed max-w-2xl line-clamp-2">{content.overview}</p>
+          <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-400 sm:text-base">{content.overview}</p>
         </div>
 
-        {/* Autoplay next indicator */}
-        {currentSeasonObj && (() => {
-          const nextEp = currentSeasonObj.episodes.find((e) => e.episodeNumber === activeEpisode + 1);
-          const nextSeason = !nextEp && content.seasons?.find((s) => s.seasonNumber === activeSeason + 1);
-          const nextItem = nextEp || nextSeason?.episodes?.[0];
-          if (!nextItem) return null;
-          return (
-            <button
-              onClick={handleAutoplayNext}
-              className="mt-4 flex items-center gap-3 bg-gray-800/80 hover:bg-gray-800 border border-white/5 rounded-xl px-4 py-3 text-sm text-gray-300 hover:text-white transition-all w-fit"
-            >
-              <svg className="w-4 h-4 text-blue-400 fill-current" viewBox="0 0 24 24">
-                <path d="M8 5v14l11-7zM6 5H4v14h2z" />
-              </svg>
-              <span>
-                Next:{' '}
-                <span className="text-white font-medium">
-                  {nextEp
-                    ? `E${nextItem.episodeNumber} – ${nextItem.title || `Episode ${nextItem.episodeNumber}`}`
-                    : `Season ${activeSeason + 1} E1`}
-                </span>
-              </span>
-            </button>
-          );
-        })()}
+        {similar.length > 0 && (
+          <div className="mt-10">
+            <MovieRow title="More to binge" subtitle="Related picks once this episode ends." movies={similar} />
+          </div>
+        )}
       </div>
 
-      {/* Episode list sidebar */}
-      <div className="xl:w-80 flex-shrink-0">
+      <div className="xl:sticky xl:top-24 xl:h-fit">
         <EpisodeList
           seasons={content.seasons}
           activeSeason={activeSeason}
@@ -127,11 +144,10 @@ function SeriesWatchLayout({ content, activeSeason, activeEpisode, onEpisodeSele
 export default function WatchPage() {
   const { id } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
 
   const typeHint = searchParams.get('type') ?? 'movie';
   const { content, similar, loading } = useContentDetails(id, typeHint);
-  const { addRecentlyWatched } = useApp();
+  const { addRecentlyWatched, settings, isKidsMode } = useApp();
 
   const [activeSeason, setActiveSeason] = useState(() => Number(searchParams.get('season') ?? 1));
   const [activeEpisode, setActiveEpisode] = useState(() => Number(searchParams.get('episode') ?? 1));
@@ -153,23 +169,31 @@ export default function WatchPage() {
   }, [setSearchParams]);
 
   if (loading) return <Loader />;
-  if (!content) return (
-    <div className="min-h-screen flex items-center justify-center text-gray-400">Content not found.</div>
-  );
+
+  if (!content) {
+    return (
+      <div className="flex min-h-screen items-center justify-center px-6 text-slate-400">
+        Content not found.
+      </div>
+    );
+  }
 
   const isSeries = content.type === 'series';
   const backTo = isSeries ? `/series/${id}` : `/movie/${id}`;
 
   return (
-    <div className="min-h-screen pt-16 bg-black">
-      <div className="max-w-[1400px] mx-auto px-4 py-6">
+    <div className="px-4 pb-16 pt-24 sm:px-6 lg:px-10">
+      <div className="mx-auto max-w-[1500px]">
         <Link
           to={backTo}
-          className="inline-flex items-center gap-1 text-gray-400 hover:text-white text-sm mb-4 transition-colors"
+          className={cx(
+            'mb-5 inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-semibold transition-all duration-300 ease-in-out hover:-translate-y-0.5',
+            isKidsMode
+              ? 'border-amber-300/20 bg-amber-300/10 text-amber-50 hover:bg-amber-300/16'
+              : 'border-white/10 bg-white/[0.04] text-slate-300 hover:border-white/20 hover:bg-white/[0.08] hover:text-white',
+          )}
         >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-          </svg>
+          <ArrowLeft className="h-4 w-4" />
           Back to details
         </Link>
 
@@ -181,16 +205,14 @@ export default function WatchPage() {
             onEpisodeSelect={handleEpisodeSelect}
             onSeasonChange={handleSeasonChange}
             similar={similar}
+            autoplay={settings.autoplay}
           />
         ) : (
           <MovieWatchLayout content={content} similar={similar} />
         )}
 
-        <div className="mt-4 bg-gray-900/50 rounded-lg p-3 border border-white/5">
-          <p className="text-gray-600 text-xs text-center">
-            Demo player — connect a real video source to the{' '}
-            <code className="text-blue-400 bg-black/40 px-1 rounded">videoUrl</code> prop.
-          </p>
+        <div className="mt-5 rounded-[24px] border border-white/10 bg-white/[0.04] px-4 py-3 text-center text-xs text-slate-500">
+          Demo player mode: connect a real `videoUrl` source when you are ready for production playback.
         </div>
       </div>
     </div>

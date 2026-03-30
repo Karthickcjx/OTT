@@ -1,67 +1,69 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { createElement, useMemo, useState } from 'react';
+import { Heart, History, LogOut, Shield, Sparkles } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
-import { IMG_BASE } from '../services/tmdb';
-import { PLACEHOLDER_COLORS } from '../services/mockData';
+import {
+  filterContentForProfile,
+  getReleaseYear,
+} from '../utils/contentExperience';
+import { getPosterArtwork } from '../utils/streamArtwork';
+import { cx } from '../admin/utils/cx';
 
-function MovieThumb({ movie, onRemove, showRemove }) {
+function MediaTile({ item, showRemove, onRemove }) {
   const navigate = useNavigate();
-  const colorClass = PLACEHOLDER_COLORS[movie.id % PLACEHOLDER_COLORS.length];
+  const isSeries = item.type === 'series';
+  const detailPath = isSeries ? `/series/${item.id}` : `/movie/${item.id}`;
 
   return (
-    <div className="relative flex-shrink-0 w-32 md:w-40 group cursor-pointer">
-      <div
-        className="rounded-lg overflow-hidden aspect-[2/3] transition-transform duration-200 group-hover:scale-105"
-        onClick={() => navigate(`/movie/${movie.id}`)}
-      >
-        {movie.poster_path ? (
-          <img
-            src={`${IMG_BASE}/w342${movie.poster_path}`}
-            alt={movie.title}
-            loading="lazy"
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <div className={`w-full h-full bg-gradient-to-br ${colorClass} flex items-end p-2`}>
-            <span className="text-white text-xs font-semibold line-clamp-3">{movie.title}</span>
-          </div>
+    <article
+      className="group cursor-pointer"
+      onClick={() => navigate(detailPath)}
+    >
+      <div className="relative overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.05] aspect-[2/3] transition-all duration-300 ease-in-out group-hover:-translate-y-1 group-hover:scale-[1.02] group-hover:shadow-[0_28px_70px_-40px_rgba(15,23,42,0.96)]">
+        <img
+          src={getPosterArtwork(item)}
+          alt={item.title}
+          className="h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.02),rgba(2,6,23,0.16)_38%,rgba(2,6,23,0.9)_100%)]" />
+
+        {showRemove && (
+          <button
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              onRemove(item.id);
+            }}
+            className="absolute right-3 top-3 rounded-full border border-rose-300/20 bg-rose-400/10 px-3 py-1.5 text-xs font-semibold text-rose-100 opacity-0 transition-all duration-300 ease-in-out group-hover:opacity-100 hover:bg-rose-400/18"
+          >
+            Remove
+          </button>
         )}
 
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-          <svg className="w-10 h-10 text-white fill-current drop-shadow" viewBox="0 0 24 24">
-            <path d="M8 5v14l11-7z" />
-          </svg>
+        <div className="absolute inset-x-4 bottom-4">
+          <p className="line-clamp-2 text-sm font-semibold text-white">{item.title}</p>
+          <p className="mt-1 text-xs text-slate-300">
+            {getReleaseYear(item)} | {isSeries ? 'Series' : 'Movie'}
+          </p>
         </div>
       </div>
-
-      {showRemove && (
-        <button
-          onClick={(e) => { e.stopPropagation(); onRemove(movie.id); }}
-          className="absolute top-1.5 right-1.5 w-6 h-6 bg-black/70 hover:bg-red-600 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all"
-          title="Remove"
-        >
-          <svg className="w-3 h-3 text-white fill-none stroke-current stroke-2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      )}
-
-      <p className="text-white text-xs font-medium mt-1.5 truncate px-0.5">{movie.title}</p>
-    </div>
+    </article>
   );
 }
 
-function EmptyState({ message, linkTo, linkLabel }) {
+function EmptyState({ icon: Icon, title, message, linkTo, linkLabel, isLight }) {
   return (
-    <div className="flex flex-col items-center justify-center py-16 text-center">
-      <div className="w-16 h-16 bg-gray-800 rounded-full flex items-center justify-center mb-4">
-        <svg className="w-7 h-7 text-gray-600 fill-current" viewBox="0 0 24 24">
-          <path d="M18 4l2 4h-3l-2-4h-2l2 4h-3l-2-4H8l2 4H7L5 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4h-4z" />
-        </svg>
+    <div className="stream-card rounded-[34px] px-6 py-12 text-center">
+      <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-white/10 bg-white/[0.04]">
+        {createElement(Icon, { className: 'h-7 w-7 text-slate-400' })}
       </div>
-      <p className="text-gray-500 text-sm">{message}</p>
+      <h2 className={cx('admin-display mt-5 text-3xl font-semibold', isLight ? 'text-slate-900' : 'text-white')}>{title}</h2>
+      <p className={cx('mx-auto mt-3 max-w-xl text-sm leading-6', isLight ? 'text-slate-600' : 'text-slate-400')}>{message}</p>
       {linkTo && (
-        <Link to={linkTo} className="text-blue-400 hover:text-blue-300 text-sm mt-2 transition-colors">
+        <Link
+          to={linkTo}
+          className="mt-6 inline-flex items-center rounded-full bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-[0_20px_42px_-20px_rgba(59,130,246,0.95)] transition-all duration-300 ease-in-out hover:-translate-y-0.5"
+        >
           {linkLabel}
         </Link>
       )}
@@ -71,102 +73,191 @@ function EmptyState({ message, linkTo, linkLabel }) {
 
 export default function Profile() {
   const navigate = useNavigate();
-  const { user, watchlist, recentlyWatched, removeFromWatchlist, logout } = useApp();
+  const {
+    user,
+    logout,
+    watchlist,
+    recentlyWatched,
+    removeFromWatchlist,
+    activeProfile,
+    isAdmin,
+    isKidsMode,
+    settings,
+  } = useApp();
   const [tab, setTab] = useState('watchlist');
+
+  const filteredWatchlist = useMemo(
+    () => filterContentForProfile(watchlist, activeProfile),
+    [activeProfile, watchlist],
+  );
+
+  const filteredRecent = useMemo(
+    () => filterContentForProfile(recentlyWatched, activeProfile),
+    [activeProfile, recentlyWatched],
+  );
+  const isLight = settings.theme === 'light' && !isKidsMode;
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-400 mb-4">Please sign in to view your profile</p>
-          <Link to="/login" className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-lg font-medium transition-colors">
-            Sign In
-          </Link>
+      <div className="px-4 pb-16 pt-32 sm:px-6 lg:px-10">
+        <div className="mx-auto max-w-3xl">
+          <EmptyState
+            icon={Sparkles}
+            title="Sign in to manage your list"
+            message="Your watchlist, recent plays, and profile settings live inside your account."
+            linkTo="/login"
+            linkLabel="Sign In"
+            isLight={isLight}
+          />
         </div>
       </div>
     );
   }
 
   const tabs = [
-    { id: 'watchlist', label: `Watchlist (${watchlist.length})` },
-    { id: 'recent', label: `Recently Watched (${recentlyWatched.length})` },
+    { id: 'watchlist', label: `Watchlist (${filteredWatchlist.length})`, icon: Heart },
+    { id: 'recent', label: `Recently Watched (${filteredRecent.length})`, icon: History },
   ];
 
   return (
-    <div className="min-h-screen pt-24 px-6 md:px-12 pb-16">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex items-start justify-between mb-10 gap-4 flex-wrap">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-2xl font-bold shadow-lg shadow-blue-900/30">
-              {user.name?.charAt(0).toUpperCase()}
+    <div className="px-4 pb-16 pt-28 sm:px-6 lg:px-10">
+      <div className="mx-auto max-w-[1500px] space-y-8">
+        <section className="stream-card rounded-[36px] p-6 sm:p-8">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex flex-wrap items-center gap-4">
+              <img
+                src={activeProfile?.avatar}
+                alt={activeProfile?.name}
+                className="h-20 w-20 rounded-[28px] border border-white/10 object-cover"
+              />
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-slate-500">
+                  Viewer Hub
+                </p>
+                <h1 className={cx('admin-display mt-3 text-3xl font-semibold sm:text-4xl', isLight ? 'text-slate-900' : 'text-white')}>
+                  {activeProfile?.name || user.name}
+                </h1>
+                <p className={cx('mt-2 text-sm', isLight ? 'text-slate-600' : 'text-slate-400')}>
+                  {user.email} | {isKidsMode ? 'Kids profile active' : 'Full catalogue access'}
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-white text-2xl font-bold">{user.name}</h1>
-              <p className="text-gray-500 text-sm">{user.email}</p>
+
+            <div className="flex flex-wrap gap-3">
+              {isAdmin && (
+                <button
+                  type="button"
+                  onClick={() => navigate('/admin')}
+                  className="inline-flex items-center gap-2 rounded-full border border-sky-300/20 bg-sky-300/12 px-5 py-3 text-sm font-semibold text-sky-100 transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:border-sky-300/30 hover:bg-sky-300/18"
+                >
+                  <Shield className="h-4 w-4" />
+                  Admin
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={() => {
+                  logout();
+                  navigate('/');
+                }}
+                className="inline-flex items-center gap-2 rounded-full border border-rose-300/20 bg-rose-400/10 px-5 py-3 text-sm font-semibold text-rose-100 transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:bg-rose-400/18"
+              >
+                <LogOut className="h-4 w-4" />
+                Sign Out
+              </button>
             </div>
           </div>
 
-          <button
-            onClick={() => { logout(); navigate('/'); }}
-            className="flex items-center gap-2 text-red-400 hover:text-red-300 bg-red-900/20 hover:bg-red-900/30 border border-red-900/40 px-4 py-2 rounded-lg text-sm font-medium transition-all"
-          >
-            <svg className="w-4 h-4 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-            Sign Out
-          </button>
-        </div>
+          <div className="mt-6 grid gap-3 sm:grid-cols-3">
+            <div className="rounded-[24px] border border-white/10 bg-white/[0.04] px-4 py-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-500">
+                Theme
+              </p>
+              <p className={cx('mt-2 text-sm font-semibold capitalize', isLight ? 'text-slate-900' : 'text-white')}>{settings.theme}</p>
+            </div>
+            <div className="rounded-[24px] border border-white/10 bg-white/[0.04] px-4 py-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-500">
+                Watchlist
+              </p>
+              <p className={cx('mt-2 text-sm font-semibold', isLight ? 'text-slate-900' : 'text-white')}>{filteredWatchlist.length} titles</p>
+            </div>
+            <div className="rounded-[24px] border border-white/10 bg-white/[0.04] px-4 py-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-500">
+                Recent activity
+              </p>
+              <p className={cx('mt-2 text-sm font-semibold', isLight ? 'text-slate-900' : 'text-white')}>{filteredRecent.length} titles</p>
+            </div>
+          </div>
+        </section>
 
-        <div className="flex gap-1 mb-8 bg-gray-900/50 p-1 rounded-xl w-fit">
-          {tabs.map(({ id, label }) => (
-            <button
-              key={id}
-              onClick={() => setTab(id)}
-              className={`px-5 py-2 rounded-lg text-sm font-medium transition-all ${
-                tab === id
-                  ? 'bg-blue-600 text-white shadow'
-                  : 'text-gray-400 hover:text-white hover:bg-white/5'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
+        <div className="inline-flex rounded-full border border-white/10 bg-white/[0.04] p-1">
+          {tabs.map(({ id, label, icon: Icon }) => {
+            const active = tab === id;
+
+            return (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setTab(id)}
+                className={cx(
+                  'inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition-all duration-300 ease-in-out',
+                  active
+                    ? 'bg-white text-slate-950 shadow-[0_16px_30px_-18px_rgba(255,255,255,0.95)]'
+                    : isLight
+                    ? 'text-slate-500 hover:bg-slate-100 hover:text-slate-900'
+                    : 'text-slate-400 hover:bg-white/[0.06] hover:text-white',
+                )}
+              >
+                  {createElement(Icon, { className: 'h-4 w-4' })}
+                  {label}
+                </button>
+            );
+          })}
         </div>
 
         {tab === 'watchlist' && (
-          watchlist.length === 0 ? (
+          filteredWatchlist.length === 0 ? (
             <EmptyState
-              message="Your watchlist is empty"
+              icon={Heart}
+              title="Your watchlist is waiting"
+              message={isKidsMode
+                ? 'Save a few family-safe picks and they will show up here for this profile.'
+                : 'Add titles from the homepage or preview modal to build your next movie night.'}
               linkTo="/"
-              linkLabel="Browse movies to add"
+              linkLabel="Browse content"
+              isLight={isLight}
             />
           ) : (
-            <div className="flex flex-wrap gap-4">
-              {watchlist.map((movie) => (
-                <MovieThumb
-                  key={movie.id}
-                  movie={movie}
+            <section className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6">
+              {filteredWatchlist.map((item) => (
+                <MediaTile
+                  key={item.id}
+                  item={item}
                   showRemove
                   onRemove={removeFromWatchlist}
                 />
               ))}
-            </div>
+            </section>
           )
         )}
 
         {tab === 'recent' && (
-          recentlyWatched.length === 0 ? (
+          filteredRecent.length === 0 ? (
             <EmptyState
-              message="You haven't watched anything yet"
+              icon={History}
+              title="No recent plays yet"
+              message="Start watching a movie or series and it will appear here for quick access."
               linkTo="/"
               linkLabel="Start watching"
+              isLight={isLight}
             />
           ) : (
-            <div className="flex flex-wrap gap-4">
-              {recentlyWatched.map((movie) => (
-                <MovieThumb key={movie.id} movie={movie} showRemove={false} />
+            <section className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6">
+              {filteredRecent.map((item) => (
+                <MediaTile key={item.id} item={item} showRemove={false} />
               ))}
-            </div>
+            </section>
           )
         )}
       </div>

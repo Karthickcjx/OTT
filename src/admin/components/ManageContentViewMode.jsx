@@ -1,3 +1,4 @@
+import { createElement } from 'react';
 import { LayoutGrid, Table2 } from 'lucide-react';
 import { cx } from '../utils/cx';
 
@@ -55,7 +56,7 @@ export default function ManageContentViewMode({
                       : 'border-white/10 bg-white/[0.03] text-slate-400 hover:border-white/20 hover:bg-white/[0.06] hover:text-white',
                   )}
                 >
-                  <Icon className="h-4 w-4" />
+                  {createElement(Icon, { className: 'h-4 w-4' })}
                   {label}
                 </button>
               );
