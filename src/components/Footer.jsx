@@ -74,7 +74,7 @@ export default function Footer() {
                 {[
                   { to: '/', label: 'Home' },
                   { to: '/profile', label: 'My List' },
-                  { to: '/login', label: user ? 'Account' : 'Sign In' },
+                  { to: '/login', label: user ? 'Account' : 'Log In' },
                 ].map(({ to, label }) => (
                   <Link
                     key={to}

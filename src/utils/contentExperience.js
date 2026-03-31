@@ -95,7 +95,7 @@ function sortByRelease(items = []) {
   });
 }
 
-export function buildShowcaseRows(rows, recentlyWatched, activeProfile) {
+export function buildShowcaseRows(rows, recentlyWatched, activeProfile, isAuthenticated = false) {
   const pool = {
     trending: filterContentForProfile(rows.trending, activeProfile),
     popular: filterContentForProfile(rows.popular, activeProfile),
@@ -124,7 +124,7 @@ export function buildShowcaseRows(rows, recentlyWatched, activeProfile) {
     ...pool.series.filter(isKidsContent),
     ...kidsPool,
   ]).slice(0, 12);
-  const continueWatching = pool.continueWatching.slice(0, 12);
+  const continueWatching = isAuthenticated ? pool.continueWatching.slice(0, 12) : [];
 
   if (activeProfile?.type === 'kids') {
     return [

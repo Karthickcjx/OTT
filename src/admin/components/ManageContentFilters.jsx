@@ -40,7 +40,7 @@ export default function ManageContentFilters({
         <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3">
           <Search className="h-4 w-4 flex-shrink-0 text-slate-500" />
           <input
-            type="text"
+            type="search"
             value={search}
             onChange={(event) => onSearchChange(event.target.value)}
             placeholder="Search titles, genres, and recent releases..."

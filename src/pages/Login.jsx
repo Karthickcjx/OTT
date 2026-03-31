@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { loginUser } from '../services/authService';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -9,6 +10,7 @@ export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState('');
 
   const validate = () => {
     const errs = {};
@@ -19,28 +21,44 @@ export default function Login() {
     return errs;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setApiError('');
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
 
     setLoading(true);
-    setTimeout(() => {
-      // Demo: admin@streamvault.com → admin role; any other email → user role
-      const isAdmin = form.email.toLowerCase() === 'admin@streamvault.com';
-      login({
-        name: form.email.split('@')[0],
+
+    try {
+      const data = await loginUser({
         email: form.email,
-        role: isAdmin ? 'admin' : 'user',
+        password: form.password,
       });
+
+      // Backend returns { token, user } or { token, ...userFields }
+      const token = data.token || data.jwt || data.accessToken;
+      const user = data.user || {
+        id: data.id,
+        name: data.name || data.username || form.email.split('@')[0],
+        email: data.email || form.email,
+        role: data.role || 'user',
+      };
+
+      login(user, token);
+      navigate('/');
+    } catch (err) {
+      setApiError(
+        err.friendlyMessage || err.response?.data?.message || 'Invalid email or password',
+      );
+    } finally {
       setLoading(false);
-      navigate(isAdmin ? '/admin' : '/');
-    }, 800);
+    }
   };
 
   const handleChange = (field) => (e) => {
     setForm((f) => ({ ...f, [field]: e.target.value }));
     setErrors((er) => ({ ...er, [field]: '' }));
+    setApiError('');
   };
 
   return (
@@ -67,10 +85,17 @@ export default function Login() {
         </div>
 
         <div className="bg-gray-900/80 backdrop-blur border border-white/10 rounded-2xl p-8 shadow-2xl">
+          {apiError && (
+            <div className="mb-5 p-3 bg-red-900/20 border border-red-800/30 rounded-xl">
+              <p className="text-red-400 text-sm text-center font-medium">{apiError}</p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-gray-400 text-sm font-medium mb-2">Email</label>
+              <label htmlFor="login-email" className="block text-gray-400 text-sm font-medium mb-2">Email</label>
               <input
+                id="login-email"
                 type="email"
                 value={form.email}
                 onChange={handleChange('email')}
@@ -84,12 +109,13 @@ export default function Login() {
 
             <div>
               <div className="flex justify-between items-center mb-2">
-                <label className="text-gray-400 text-sm font-medium">Password</label>
+                <label htmlFor="login-password" className="text-gray-400 text-sm font-medium">Password</label>
                 <a href="#" className="text-blue-400 hover:text-blue-300 text-xs transition-colors">
                   Forgot password?
                 </a>
               </div>
               <input
+                id="login-password"
                 type="password"
                 value={form.password}
                 onChange={handleChange('password')}
@@ -114,12 +140,6 @@ export default function Login() {
               ) : 'Sign In'}
             </button>
           </form>
-
-          <div className="mt-5 p-3 bg-amber-900/20 border border-amber-800/30 rounded-xl">
-            <p className="text-amber-400 text-xs font-medium text-center">
-              Demo admin: <span className="font-mono text-amber-300">admin@streamvault.com</span> / any password
-            </p>
-          </div>
 
           <p className="text-gray-500 text-sm text-center mt-4">
             Don&apos;t have an account?{' '}

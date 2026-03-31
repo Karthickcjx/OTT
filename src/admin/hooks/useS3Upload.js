@@ -1,10 +1,10 @@
 import { useState, useCallback } from 'react';
-import { getPresignedUrl, uploadToS3 } from '../services/adminApi';
+import { uploadFile } from '../services/adminApi';
 
 const INITIAL = { progress: 0, uploading: false, url: null, error: null };
 
 /**
- * Handles the full pre-signed URL → S3 PUT upload flow for a single file slot.
+ * Handles the full multipart upload flow for a single file slot.
  *
  * Usage:
  *   const thumb = useS3Upload();
@@ -22,9 +22,7 @@ export function useS3Upload() {
     setState({ progress: 0, uploading: true, url: null, error: null });
 
     try {
-      const { uploadUrl, fileUrl } = await getPresignedUrl(file.name, file.type);
-
-      await uploadToS3(uploadUrl, file, (progress) => {
+      const { fileUrl } = await uploadFile(file, (progress) => {
         setState((s) => ({ ...s, progress }));
       });
 

@@ -11,13 +11,13 @@ import { cx } from '../admin/utils/cx';
 
 export default function Home() {
   const { rows, loading } = useMovieRows();
-  const { activeProfile, isKidsMode, recentlyWatched, settings } = useApp();
+  const { activeProfile, isKidsMode, isAuthenticated, recentlyWatched, settings } = useApp();
   const [previewMovie, setPreviewMovie] = useState(null);
   const isLight = settings.theme === 'light' && !isKidsMode;
 
   const showcaseRows = useMemo(
-    () => buildShowcaseRows(rows, recentlyWatched, activeProfile),
-    [activeProfile, recentlyWatched, rows],
+    () => buildShowcaseRows(rows, recentlyWatched, activeProfile, isAuthenticated),
+    [activeProfile, isAuthenticated, recentlyWatched, rows],
   );
 
   const featuredMovie = showcaseRows[0]?.items?.[0] || null;

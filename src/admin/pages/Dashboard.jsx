@@ -10,20 +10,12 @@ import {
   Users,
 } from 'lucide-react';
 import StatCard from '../components/StatCard';
-import { fetchDashboardStats } from '../services/adminApi';
-import {
-  MOCK_ADMIN_MOVIES,
-  MOCK_ADMIN_SERIES,
-  MOCK_STATS,
-} from '../services/mockAdminData';
+import { fetchDashboardStats, fetchAdminMovies, fetchAdminSeries } from '../services/adminApi';
 import {
   PosterThumb,
   SectionCard,
   SectionHeader,
 } from '../components/AdminPrimitives';
-
-const USE_MOCK = !import.meta.env.VITE_API_BASE_URL ||
-  import.meta.env.VITE_API_BASE_URL === 'http://localhost:8080';
 
 const QUICK_ACTIONS = [
   {
@@ -111,24 +103,44 @@ export default function Dashboard() {
   const [stats, setStats] = useState(null);
   const [recentItems, setRecentItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const load = async () => {
-      if (USE_MOCK) {
-        await new Promise((resolve) => setTimeout(resolve, 450));
-        setStats(MOCK_STATS);
-        setRecentItems(
-          [...MOCK_ADMIN_MOVIES, ...MOCK_ADMIN_SERIES]
-            .sort((left, right) => new Date(right.createdAt) - new Date(left.createdAt))
-            .slice(0, 5),
-        );
-      } else {
-        const data = await fetchDashboardStats();
-        setStats(data.stats);
-        setRecentItems(data.recentContent ?? []);
-      }
+      try {
+        // Fetch stats and recent content from backend
+        const [statsData, movies, series] = await Promise.all([
+          fetchDashboardStats().catch(() => null),
+          fetchAdminMovies().catch(() => []),
+          fetchAdminSeries().catch(() => []),
+        ]);
 
-      setLoading(false);
+        // Build stats from response or calculate from content
+        if (statsData) {
+          setStats(statsData.stats || statsData);
+        } else {
+          setStats({
+            totalMovies: movies.length,
+            totalSeries: series.length,
+            totalUsers: 0,
+            totalViews: 0,
+          });
+        }
+
+        // Build recent items
+        const allContent = [
+          ...(movies || []).map((m) => ({ ...m, type: m.type || 'movie' })),
+          ...(series || []).map((s) => ({ ...s, type: s.type || 'series' })),
+        ]
+          .sort((left, right) => new Date(right.createdAt || 0) - new Date(left.createdAt || 0))
+          .slice(0, 5);
+
+        setRecentItems(allContent);
+      } catch (err) {
+        setError(err?.friendlyMessage || 'Failed to load dashboard');
+      } finally {
+        setLoading(false);
+      }
     };
 
     load();
@@ -184,6 +196,12 @@ export default function Dashboard() {
           )}
         />
       </SectionCard>
+
+      {error && (
+        <div className="rounded-[26px] border border-rose-300/20 bg-rose-400/10 px-5 py-4 text-sm text-rose-200">
+          {error}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {loading

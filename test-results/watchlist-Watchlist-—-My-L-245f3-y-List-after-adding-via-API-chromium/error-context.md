@@ -1,0 +1,106 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - link "StreamVault Premium Streaming" [ref=e7] [cursor=pointer]:
+          - /url: /
+          - img [ref=e9]
+          - generic [ref=e11]:
+            - paragraph [ref=e12]: StreamVault
+            - paragraph [ref=e13]: Premium Streaming
+        - generic [ref=e14]:
+          - link "Home" [ref=e15] [cursor=pointer]:
+            - /url: /
+          - link "My List" [ref=e16] [cursor=pointer]:
+            - /url: /profile
+      - generic [ref=e17]:
+        - button "Search content" [ref=e20]:
+          - img [ref=e21]
+        - button "Open settings" [ref=e24]:
+          - img [ref=e25]
+        - button "QA Test User QA Test User adult profile" [ref=e28]:
+          - img "QA Test User" [ref=e29]
+          - generic [ref=e30]:
+            - paragraph [ref=e31]: QA Test User
+            - paragraph [ref=e32]: adult profile
+  - main [ref=e33]:
+    - generic [ref=e35]:
+      - generic [ref=e36]:
+        - generic [ref=e37]:
+          - generic [ref=e38]:
+            - img "QA Test User" [ref=e39]
+            - generic [ref=e40]:
+              - paragraph [ref=e41]: Viewer Hub
+              - heading "QA Test User" [level=1] [ref=e42]
+              - paragraph [ref=e43]: qa_user_1774957652199@test.local | Full catalogue access
+          - button "Sign Out" [ref=e45]:
+            - img [ref=e46]
+            - text: Sign Out
+        - generic [ref=e49]:
+          - generic [ref=e50]:
+            - paragraph [ref=e51]: Theme
+            - paragraph [ref=e52]: dark
+          - generic [ref=e53]:
+            - paragraph [ref=e54]: Watchlist
+            - paragraph [ref=e55]: 0 titles
+          - generic [ref=e56]:
+            - paragraph [ref=e57]: Recent activity
+            - paragraph [ref=e58]: 0 titles
+      - generic [ref=e59]:
+        - button "Watchlist (0)" [ref=e60]:
+          - img [ref=e61]
+          - text: Watchlist (0)
+        - button "Recently Watched (0)" [ref=e63]:
+          - img [ref=e64]
+          - text: Recently Watched (0)
+      - generic [ref=e68]:
+        - img [ref=e70]
+        - heading "Your watchlist is waiting" [level=2] [ref=e72]
+        - paragraph [ref=e73]: Add titles from the homepage or preview modal to build your next movie night.
+        - link "Browse content" [ref=e74] [cursor=pointer]:
+          - /url: /
+  - contentinfo [ref=e76]:
+    - generic [ref=e77]:
+      - generic [ref=e78]:
+        - generic [ref=e79]:
+          - generic [ref=e80]:
+            - img [ref=e82]
+            - generic [ref=e87]:
+              - heading "StreamVault" [level=2] [ref=e88]
+              - paragraph [ref=e89]: Premium streaming discovery with profile-aware browsing, cinematic hero content, and polished content rails.
+          - generic [ref=e90]:
+            - generic [ref=e91]:
+              - paragraph [ref=e92]: Active profile
+              - paragraph [ref=e93]: QA Test User
+            - generic [ref=e94]:
+              - paragraph [ref=e95]: Interface
+              - paragraph [ref=e96]: Dark theme
+            - generic [ref=e97]:
+              - paragraph [ref=e98]: Language
+              - paragraph [ref=e99]:
+                - img [ref=e100]
+                - text: English
+        - generic [ref=e105]:
+          - generic [ref=e106]:
+            - paragraph [ref=e107]: Explore
+            - generic [ref=e108]:
+              - link "Home" [ref=e109] [cursor=pointer]:
+                - /url: /
+              - link "My List" [ref=e110] [cursor=pointer]:
+                - /url: /profile
+              - link "Account" [ref=e111] [cursor=pointer]:
+                - /url: /login
+          - generic [ref=e112]:
+            - paragraph [ref=e113]: Status
+            - generic [ref=e115]:
+              - paragraph [ref=e116]:
+                - img [ref=e117]
+                - text: Experience updated
+              - paragraph [ref=e120]: Hero, search, profiles, and premium content rows are all active.
+      - generic [ref=e121]:
+        - paragraph [ref=e122]: 2026 StreamVault. All rights reserved.
+        - paragraph [ref=e123]: "Artwork mode: cinematic"
+```

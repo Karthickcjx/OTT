@@ -118,6 +118,7 @@ export function FloatingInput({
     >
       <input
         {...props}
+        aria-label={label}
         value={value}
         placeholder=" "
         onFocus={(event) => {
@@ -163,6 +164,7 @@ export function FloatingTextarea({
     >
       <textarea
         {...props}
+        aria-label={label}
         value={value}
         rows={rows}
         placeholder=" "
@@ -209,6 +211,7 @@ export function FloatingSelect({
     >
       <select
         {...props}
+        aria-label={label}
         value={value}
         onFocus={(event) => {
           setFocused(true);

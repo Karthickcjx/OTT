@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { IMG_BASE } from '../services/tmdb';
 import { useMovieDetails } from '../hooks/useMovieDetails';
 import { useApp } from '../context/AppContext';
 import MovieRow from '../components/MovieRow';
@@ -19,9 +18,9 @@ function CastCard({ member }) {
   return (
     <div className="flex-shrink-0 w-24 text-center">
       <div className="w-16 h-16 bg-gray-700 rounded-full mx-auto mb-2 overflow-hidden">
-        {member.profile_path ? (
+        {member.profilePath || member.profile_path ? (
           <img
-            src={`${IMG_BASE}/w185${member.profile_path}`}
+            src={member.profilePath || member.profile_path}
             alt={member.name}
             className="w-full h-full object-cover"
             loading="lazy"
@@ -41,11 +40,27 @@ function CastCard({ member }) {
 export default function MovieDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { movie, similar, loading } = useMovieDetails(id);
+  const { movie, similar, loading, error } = useMovieDetails(id);
   const { addToWatchlist, removeFromWatchlist, isInWatchlist } = useApp();
   const [imgError, setImgError] = useState(false);
 
   if (loading) return <Loader />;
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center text-gray-400 gap-3">
+        <p className="text-xl font-semibold text-red-400">Failed to load movie</p>
+        <p className="text-sm">{error.friendlyMessage || 'Something went wrong'}</p>
+        <button
+          onClick={() => navigate('/')}
+          className="mt-2 text-blue-400 hover:text-blue-300 text-sm"
+        >
+          ← Back to Home
+        </button>
+      </div>
+    );
+  }
+
   if (!movie) return (
     <div className="min-h-screen flex items-center justify-center text-gray-400">
       Movie not found.
@@ -54,18 +69,21 @@ export default function MovieDetails() {
 
   const inWatchlist = isInWatchlist(movie.id);
   const colorClass = PLACEHOLDER_COLORS[movie.id % PLACEHOLDER_COLORS.length];
-  const backdropUrl = movie.backdrop_path && !imgError
-    ? `${IMG_BASE}/original${movie.backdrop_path}`
+
+  // Support both backend field names and TMDB-style names
+  const backdropUrl = (movie.bannerUrl || movie.backdropUrl || movie.backdrop_path) && !imgError
+    ? movie.bannerUrl || movie.backdropUrl || movie.backdrop_path
     : null;
 
-  const cast = movie.credits?.cast?.slice(0, 10) || [];
+  const genres = movie.genres || (movie.genre ? [{ id: 1, name: movie.genre }] : []);
+  const cast = movie.credits?.cast?.slice(0, 10) || movie.cast?.slice(0, 10) || [];
   const trailer = movie.videos?.results?.find(
     (v) => v.type === 'Trailer' && v.site === 'YouTube'
-  );
+  ) || movie.trailerUrl;
 
   const toggleWatchlist = () => {
     if (inWatchlist) removeFromWatchlist(movie.id);
-    else addToWatchlist(movie);
+    else addToWatchlist({ ...movie, type: 'movie' });
   };
 
   return (
@@ -85,9 +103,9 @@ export default function MovieDetails() {
         <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/30" />
 
         <div className="absolute bottom-10 left-6 md:left-12 max-w-2xl z-10">
-          {movie.genres?.length > 0 && (
+          {genres.length > 0 && (
             <div className="flex gap-2 mb-3 flex-wrap">
-              {movie.genres.map((g) => <GenreBadge key={g.id} name={g.name} />)}
+              {genres.map((g) => <GenreBadge key={g.id || g.name} name={g.name || g} />)}
             </div>
           )}
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-3 drop-shadow-lg">
@@ -98,12 +116,13 @@ export default function MovieDetails() {
               <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
                 <path d="M10 15l-5.878 3.09 1.122-6.545L.488 6.91l6.561-.955L10 0l2.951 5.955 6.561.955-4.756 4.635 1.122 6.545z" />
               </svg>
-              {movie.vote_average?.toFixed(1)}
+              {(movie.vote_average || movie.rating)?.toFixed?.(1) || 'N/A'}
             </span>
-            {movie.release_date && <span>{movie.release_date.slice(0, 4)}</span>}
-            {movie.runtime && <span>{movie.runtime} min</span>}
-            {movie.vote_count && (
-              <span className="text-gray-500">{movie.vote_count.toLocaleString()} votes</span>
+            {(movie.release_date || movie.releaseYear) && (
+              <span>{String(movie.release_date || movie.releaseYear).slice(0, 4)}</span>
+            )}
+            {(movie.runtime || movie.duration) && (
+              <span>{movie.runtime || movie.duration} min</span>
             )}
           </div>
           <div className="flex gap-3 flex-wrap">
@@ -137,15 +156,17 @@ export default function MovieDetails() {
       <div className="px-6 md:px-12 py-10 max-w-5xl space-y-10">
         <div>
           <h2 className="text-white text-lg font-semibold mb-3">Overview</h2>
-          <p className="text-gray-300 leading-relaxed">{movie.overview}</p>
+          <p className="text-gray-300 leading-relaxed">
+            {movie.overview || movie.description}
+          </p>
         </div>
 
         {cast.length > 0 && (
           <div>
             <h2 className="text-white text-lg font-semibold mb-4">Cast</h2>
             <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2">
-              {cast.map((member) => (
-                <CastCard key={member.id} member={member} />
+              {cast.map((member, idx) => (
+                <CastCard key={member.id || idx} member={member} />
               ))}
             </div>
           </div>
@@ -155,12 +176,21 @@ export default function MovieDetails() {
           <div>
             <h2 className="text-white text-lg font-semibold mb-4">Trailer</h2>
             <div className="aspect-video max-w-2xl rounded-xl overflow-hidden">
-              <iframe
-                src={`https://www.youtube.com/embed/${trailer.key}`}
-                title="Trailer"
-                className="w-full h-full"
-                allowFullScreen
-              />
+              {typeof trailer === 'string' ? (
+                <iframe
+                  src={trailer}
+                  title="Trailer"
+                  className="w-full h-full"
+                  allowFullScreen
+                />
+              ) : (
+                <iframe
+                  src={`https://www.youtube.com/embed/${trailer.key}`}
+                  title="Trailer"
+                  className="w-full h-full"
+                  allowFullScreen
+                />
+              )}
             </div>
           </div>
         )}

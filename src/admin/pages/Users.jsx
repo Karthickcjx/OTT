@@ -7,7 +7,6 @@ import {
   UserRound,
 } from 'lucide-react';
 import { fetchUsers, deleteUser } from '../services/adminApi';
-import { MOCK_USERS } from '../services/mockAdminData';
 import { ToastContainer } from '../components/Toast';
 import { useToast } from '../hooks/useToast';
 import {
@@ -17,13 +16,10 @@ import {
 } from '../components/AdminPrimitives';
 import { cx } from '../utils/cx';
 
-const USE_MOCK = !import.meta.env.VITE_API_BASE_URL ||
-  import.meta.env.VITE_API_BASE_URL === 'http://localhost:8080';
-
 function RoleBadge({ role }) {
   return (
     <span className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold capitalize ${
-      role === 'admin'
+      role === 'admin' || role === 'ADMIN'
         ? 'border-fuchsia-300/20 bg-fuchsia-400/12 text-fuchsia-100'
         : 'border-sky-300/20 bg-sky-400/12 text-sky-100'
     }`}>
@@ -33,7 +29,7 @@ function RoleBadge({ role }) {
 }
 
 function getAvatarDataUri(name, role) {
-  const palette = role === 'admin'
+  const palette = role === 'admin' || role === 'ADMIN'
     ? { start: '#a855f7', end: '#7c3aed', accent: '#f5d0fe' }
     : { start: '#38bdf8', end: '#2563eb', accent: '#dbeafe' };
 
@@ -67,6 +63,7 @@ export default function Users() {
   const toast = useToast();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
 
@@ -75,13 +72,10 @@ export default function Users() {
   useEffect(() => {
     const load = async () => {
       try {
-        if (USE_MOCK) {
-          await new Promise((resolve) => setTimeout(resolve, 450));
-          setUsers(MOCK_USERS);
-        } else {
-          const data = await fetchUsers();
-          setUsers(data);
-        }
+        const data = await fetchUsers();
+        setUsers(data || []);
+      } catch (err) {
+        setError(err?.friendlyMessage || 'Failed to load users');
       } finally {
         setLoading(false);
       }
@@ -94,9 +88,10 @@ export default function Users() {
     return users.filter((user) => {
       const query = deferredSearch.toLowerCase();
       const matchSearch = !deferredSearch
-        || user.name.toLowerCase().includes(query)
-        || user.email.toLowerCase().includes(query);
-      const matchRole = !roleFilter || user.role === roleFilter;
+        || user.name?.toLowerCase().includes(query)
+        || user.email?.toLowerCase().includes(query);
+      const userRole = (user.role || '').toLowerCase();
+      const matchRole = !roleFilter || userRole === roleFilter;
       return matchSearch && matchRole;
     });
   }, [deferredSearch, roleFilter, users]);
@@ -105,7 +100,7 @@ export default function Users() {
     if (!confirm('Remove this user?')) return;
 
     try {
-      if (!USE_MOCK) await deleteUser(id);
+      await deleteUser(id);
       setUsers((current) => current.filter((user) => user.id !== id));
       toast.success('User removed');
     } catch {
@@ -131,6 +126,12 @@ export default function Users() {
             title="User management"
             description="Review operators and viewers with clearer hierarchy, richer avatars, and quick moderation actions."
           />
+
+          {error && (
+            <div className="mt-4 rounded-[22px] border border-rose-300/20 bg-rose-400/10 px-4 py-3 text-sm text-rose-200">
+              {error}
+            </div>
+          )}
 
           <div className="mt-7 grid gap-4 lg:grid-cols-[minmax(0,1fr)_300px]">
             <div className="rounded-[28px] border border-white/10 bg-white/[0.03] p-4">
@@ -179,7 +180,7 @@ export default function Users() {
                   Admin accounts
                 </p>
                 <p className="mt-2 text-2xl font-semibold text-white">
-                  {users.filter((user) => user.role === 'admin').length}
+                  {users.filter((user) => (user.role || '').toLowerCase() === 'admin').length}
                 </p>
                 <p className="mt-1 text-sm text-slate-400">currently holding elevated access</p>
               </SectionCard>
@@ -198,7 +199,7 @@ export default function Users() {
                 <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
                   <div className="flex min-w-0 items-center gap-4">
                     <img
-                      src={getAvatarDataUri(user.name, user.role)}
+                      src={getAvatarDataUri(user.name || 'User', user.role)}
                       alt={user.name}
                       className="h-16 w-16 rounded-[24px] border border-white/10 object-cover shadow-[0_18px_40px_-24px_rgba(15,23,42,0.95)]"
                     />
@@ -211,22 +212,26 @@ export default function Users() {
                       <p className="mt-1 line-clamp-1 text-sm text-slate-400">{user.email}</p>
 
                       <div className="mt-3 flex flex-wrap gap-3 text-sm">
-                        <div className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-slate-300">
-                          Joined {new Date(user.joinedAt).toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric',
-                          })}
-                        </div>
-                        <div className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-slate-300">
-                          Watchlist {user.watchlistCount}
-                        </div>
+                        {user.joinedAt && (
+                          <div className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-slate-300">
+                            Joined {new Date(user.joinedAt).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric',
+                            })}
+                          </div>
+                        )}
+                        {user.watchlistCount !== undefined && (
+                          <div className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-slate-300">
+                            Watchlist {user.watchlistCount}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
 
                   <div className="flex flex-wrap items-center gap-3">
-                    {user.role !== 'admin' && (
+                    {(user.role || '').toLowerCase() !== 'admin' && (
                       <button
                         type="button"
                         onClick={() => handlePromote(user)}
@@ -246,7 +251,7 @@ export default function Users() {
                       Suspend
                     </button>
 
-                    {user.role !== 'admin' && (
+                    {(user.role || '').toLowerCase() !== 'admin' && (
                       <button
                         type="button"
                         onClick={() => handleDelete(user.id)}
@@ -257,7 +262,7 @@ export default function Users() {
                       </button>
                     )}
 
-                    {user.role === 'admin' && (
+                    {(user.role || '').toLowerCase() === 'admin' && (
                       <span className={cx(
                         'rounded-full border px-4 py-2.5 text-sm font-semibold',
                         'border-fuchsia-300/20 bg-fuchsia-400/12 text-fuchsia-100',

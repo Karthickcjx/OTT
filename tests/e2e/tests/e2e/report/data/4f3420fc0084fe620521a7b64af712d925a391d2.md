@@ -1,0 +1,358 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - link "StreamVault Premium Streaming" [ref=e7] [cursor=pointer]:
+          - /url: /
+          - img [ref=e9]
+          - generic [ref=e11]:
+            - paragraph [ref=e12]: StreamVault
+            - paragraph [ref=e13]: Premium Streaming
+        - generic [ref=e14]:
+          - link "Home" [ref=e15] [cursor=pointer]:
+            - /url: /
+          - link "My List" [ref=e16] [cursor=pointer]:
+            - /url: /profile
+      - generic [ref=e17]:
+        - button "Search content" [ref=e20]:
+          - img [ref=e21]
+        - button "Open settings" [ref=e24]:
+          - img [ref=e25]
+        - button "QA Test User QA Test User adult profile" [ref=e28]:
+          - img "QA Test User" [ref=e29]
+          - generic [ref=e30]:
+            - paragraph [ref=e31]: QA Test User
+            - paragraph [ref=e32]: adult profile
+  - main [ref=e33]:
+    - generic [ref=e34]:
+      - generic [ref=e35]:
+        - img "QA Movie 1774953032431" [ref=e36]
+        - generic [ref=e40]:
+          - generic [ref=e41]:
+            - generic [ref=e42]:
+              - img [ref=e43]
+              - text: Featured Tonight
+            - generic [ref=e48]:
+              - img "QA Test User" [ref=e49]
+              - text: QA Test User
+          - generic [ref=e51]: Science Fiction
+          - heading "QA Movie 1774953032431" [level=1] [ref=e52]
+          - generic [ref=e53]:
+            - generic [ref=e54]: "2025"
+            - generic [ref=e55]: Movie night
+          - paragraph
+          - generic [ref=e56]:
+            - button "Play" [ref=e57]:
+              - img [ref=e58]
+              - text: Play
+            - button "Add to Watchlist" [active] [ref=e60]:
+              - img [ref=e61]
+              - text: Add to Watchlist
+            - button "Trailer" [ref=e62]:
+              - img [ref=e63]
+              - text: Trailer
+      - generic [ref=e67]:
+        - generic [ref=e69]:
+          - generic [ref=e70]:
+            - generic [ref=e71]:
+              - generic [ref=e72]:
+                - heading "Trending Now" [level=2] [ref=e73]
+                - generic [ref=e74]: 4 titles
+              - paragraph [ref=e75]: The breakout titles everyone is talking about.
+            - generic [ref=e76]:
+              - button "Scroll left" [ref=e77]:
+                - img [ref=e78]
+              - button "Scroll right" [ref=e80]:
+                - img [ref=e81]
+          - generic [ref=e84]:
+            - article [ref=e85] [cursor=pointer]:
+              - generic [ref=e86]:
+                - img "QA Movie 1774953032431" [ref=e87]
+                - generic [ref=e91]:
+                  - img [ref=e92]
+                  - text: Movie
+                - generic [ref=e94]:
+                  - generic [ref=e96]:
+                    - button "Play" [ref=e97]:
+                      - img [ref=e98]
+                      - text: Play
+                    - button "Open info for QA Movie 1774953032431" [ref=e100]:
+                      - img [ref=e101]
+                  - paragraph [ref=e103]: QA Movie 1774953032431
+                  - paragraph [ref=e104]: Science Fiction | 2025
+              - paragraph [ref=e106]: Featured selection
+            - article [ref=e107] [cursor=pointer]:
+              - generic [ref=e108]:
+                - img "Bad Year Movie" [ref=e109]
+                - generic [ref=e113]:
+                  - img [ref=e114]
+                  - text: Movie
+                - generic [ref=e116]:
+                  - generic [ref=e118]:
+                    - button "Play" [ref=e119]:
+                      - img [ref=e120]
+                      - text: Play
+                    - button "Open info for Bad Year Movie" [ref=e122]:
+                      - img [ref=e123]
+                  - paragraph [ref=e125]: Bad Year Movie
+                  - paragraph [ref=e126]: Drama | -100
+              - paragraph [ref=e128]: Featured selection
+            - article [ref=e129] [cursor=pointer]:
+              - generic [ref=e130]:
+                - img "Bad Rating" [ref=e131]
+                - generic [ref=e135]:
+                  - img [ref=e136]
+                  - text: Movie
+                - generic [ref=e138]:
+                  - generic [ref=e140]:
+                    - button "Play" [ref=e141]:
+                      - img [ref=e142]
+                      - text: Play
+                    - button "Open info for Bad Rating" [ref=e144]:
+                      - img [ref=e145]
+                  - paragraph [ref=e147]: Bad Rating
+                  - paragraph [ref=e148]: Action | 2024
+              - paragraph [ref=e150]: Featured selection
+            - article [ref=e151] [cursor=pointer]:
+              - generic [ref=e152]:
+                - img "E2E Watchlist Movie 1774957614656" [ref=e153]
+                - generic [ref=e157]:
+                  - img [ref=e158]
+                  - text: Movie
+                - generic [ref=e160]:
+                  - generic [ref=e162]:
+                    - button "Play" [ref=e163]:
+                      - img [ref=e164]
+                      - text: Play
+                    - button "Open info for E2E Watchlist Movie 1774957614656" [ref=e166]:
+                      - img [ref=e167]
+                  - paragraph [ref=e169]: E2E Watchlist Movie 1774957614656
+                  - paragraph [ref=e170]: Science Fiction | 2025
+              - paragraph [ref=e172]: Featured selection
+        - generic [ref=e174]:
+          - generic [ref=e175]:
+            - generic [ref=e176]:
+              - generic [ref=e177]:
+                - heading "Top Picks" [level=2] [ref=e178]
+                - generic [ref=e179]: 4 titles
+              - paragraph [ref=e180]: A curated mix of fan favorites and critically loved titles.
+            - generic [ref=e181]:
+              - button "Scroll left" [ref=e182]:
+                - img [ref=e183]
+              - button "Scroll right" [ref=e185]:
+                - img [ref=e186]
+          - generic [ref=e189]:
+            - article [ref=e190] [cursor=pointer]:
+              - generic [ref=e191]:
+                - img "Bad Rating" [ref=e192]
+                - generic [ref=e196]:
+                  - img [ref=e197]
+                  - text: Movie
+                - generic [ref=e199]:
+                  - generic [ref=e201]:
+                    - button "Play" [ref=e202]:
+                      - img [ref=e203]
+                      - text: Play
+                    - button "Open info for Bad Rating" [ref=e205]:
+                      - img [ref=e206]
+                  - paragraph [ref=e208]: Bad Rating
+                  - paragraph [ref=e209]: Action | 2024
+              - paragraph [ref=e211]: Featured selection
+            - article [ref=e212] [cursor=pointer]:
+              - generic [ref=e213]:
+                - img "QA Movie 1774953032431" [ref=e214]
+                - generic [ref=e218]:
+                  - img [ref=e219]
+                  - text: Movie
+                - generic [ref=e221]:
+                  - generic [ref=e223]:
+                    - button "Play" [ref=e224]:
+                      - img [ref=e225]
+                      - text: Play
+                    - button "Open info for QA Movie 1774953032431" [ref=e227]:
+                      - img [ref=e228]
+                  - paragraph [ref=e230]: QA Movie 1774953032431
+                  - paragraph [ref=e231]: Science Fiction | 2025
+              - paragraph [ref=e233]: Featured selection
+            - article [ref=e234] [cursor=pointer]:
+              - generic [ref=e235]:
+                - img "E2E Watchlist Movie 1774957614656" [ref=e236]
+                - generic [ref=e240]:
+                  - img [ref=e241]
+                  - text: Movie
+                - generic [ref=e243]:
+                  - generic [ref=e245]:
+                    - button "Play" [ref=e246]:
+                      - img [ref=e247]
+                      - text: Play
+                    - button "Open info for E2E Watchlist Movie 1774957614656" [ref=e249]:
+                      - img [ref=e250]
+                  - paragraph [ref=e252]: E2E Watchlist Movie 1774957614656
+                  - paragraph [ref=e253]: Science Fiction | 2025
+              - paragraph [ref=e255]: Featured selection
+            - article [ref=e256] [cursor=pointer]:
+              - generic [ref=e257]:
+                - img "Bad Year Movie" [ref=e258]
+                - generic [ref=e262]:
+                  - img [ref=e263]
+                  - text: Movie
+                - generic [ref=e265]:
+                  - generic [ref=e267]:
+                    - button "Play" [ref=e268]:
+                      - img [ref=e269]
+                      - text: Play
+                    - button "Open info for Bad Year Movie" [ref=e271]:
+                      - img [ref=e272]
+                  - paragraph [ref=e274]: Bad Year Movie
+                  - paragraph [ref=e275]: Drama | -100
+              - paragraph [ref=e277]: Featured selection
+        - generic [ref=e279]:
+          - generic [ref=e280]:
+            - generic [ref=e281]:
+              - generic [ref=e282]:
+                - heading "New Releases" [level=2] [ref=e283]
+                - generic [ref=e284]: 4 titles
+              - paragraph [ref=e285]: Fresh premieres and recent drops.
+            - generic [ref=e286]:
+              - button "Scroll left" [ref=e287]:
+                - img [ref=e288]
+              - button "Scroll right" [ref=e290]:
+                - img [ref=e291]
+          - generic [ref=e294]:
+            - article [ref=e295] [cursor=pointer]:
+              - generic [ref=e296]:
+                - img "QA Movie 1774953032431" [ref=e297]
+                - generic [ref=e301]:
+                  - img [ref=e302]
+                  - text: Movie
+                - generic [ref=e304]:
+                  - generic [ref=e306]:
+                    - button "Play" [ref=e307]:
+                      - img [ref=e308]
+                      - text: Play
+                    - button "Open info for QA Movie 1774953032431" [ref=e310]:
+                      - img [ref=e311]
+                  - paragraph [ref=e313]: QA Movie 1774953032431
+                  - paragraph [ref=e314]: Science Fiction | 2025
+              - paragraph [ref=e316]: Featured selection
+            - article [ref=e317] [cursor=pointer]:
+              - generic [ref=e318]:
+                - img "E2E Watchlist Movie 1774957614656" [ref=e319]
+                - generic [ref=e323]:
+                  - img [ref=e324]
+                  - text: Movie
+                - generic [ref=e326]:
+                  - generic [ref=e328]:
+                    - button "Play" [ref=e329]:
+                      - img [ref=e330]
+                      - text: Play
+                    - button "Open info for E2E Watchlist Movie 1774957614656" [ref=e332]:
+                      - img [ref=e333]
+                  - paragraph [ref=e335]: E2E Watchlist Movie 1774957614656
+                  - paragraph [ref=e336]: Science Fiction | 2025
+              - paragraph [ref=e338]: Featured selection
+            - article [ref=e339] [cursor=pointer]:
+              - generic [ref=e340]:
+                - img "Bad Rating" [ref=e341]
+                - generic [ref=e345]:
+                  - img [ref=e346]
+                  - text: Movie
+                - generic [ref=e348]:
+                  - generic [ref=e350]:
+                    - button "Play" [ref=e351]:
+                      - img [ref=e352]
+                      - text: Play
+                    - button "Open info for Bad Rating" [ref=e354]:
+                      - img [ref=e355]
+                  - paragraph [ref=e357]: Bad Rating
+                  - paragraph [ref=e358]: Action | 2024
+              - paragraph [ref=e360]: Featured selection
+            - article [ref=e361] [cursor=pointer]:
+              - generic [ref=e362]:
+                - img "Bad Year Movie" [ref=e363]
+                - generic [ref=e367]:
+                  - img [ref=e368]
+                  - text: Movie
+                - generic [ref=e370]:
+                  - generic [ref=e372]:
+                    - button "Play" [ref=e373]:
+                      - img [ref=e374]
+                      - text: Play
+                    - button "Open info for Bad Year Movie" [ref=e376]:
+                      - img [ref=e377]
+                  - paragraph [ref=e379]: Bad Year Movie
+                  - paragraph [ref=e380]: Drama | -100
+              - paragraph [ref=e382]: Featured selection
+        - generic [ref=e384]:
+          - generic [ref=e385]:
+            - generic [ref=e386]:
+              - generic [ref=e387]:
+                - heading "Binge-Worthy Series" [level=2] [ref=e388]
+                - generic [ref=e389]: 1 titles
+              - paragraph [ref=e390]: Serialized stories built for long nights.
+            - generic [ref=e391]:
+              - button "Scroll left" [ref=e392]:
+                - img [ref=e393]
+              - button "Scroll right" [ref=e395]:
+                - img [ref=e396]
+          - article [ref=e400] [cursor=pointer]:
+            - generic [ref=e401]:
+              - img "QA Series 1774953032431" [ref=e402]
+              - generic [ref=e406]:
+                - img [ref=e407]
+                - text: Series
+              - generic [ref=e410]:
+                - generic [ref=e412]:
+                  - button "Play" [ref=e413]:
+                    - img [ref=e414]
+                    - text: Play
+                  - button "Open info for QA Series 1774953032431" [ref=e416]:
+                    - img [ref=e417]
+                - paragraph [ref=e419]: QA Series 1774953032431
+                - paragraph [ref=e420]: Drama | 2025
+            - paragraph [ref=e422]: Binge worthy
+  - contentinfo [ref=e424]:
+    - generic [ref=e425]:
+      - generic [ref=e426]:
+        - generic [ref=e427]:
+          - generic [ref=e428]:
+            - img [ref=e430]
+            - generic [ref=e435]:
+              - heading "StreamVault" [level=2] [ref=e436]
+              - paragraph [ref=e437]: Premium streaming discovery with profile-aware browsing, cinematic hero content, and polished content rails.
+          - generic [ref=e438]:
+            - generic [ref=e439]:
+              - paragraph [ref=e440]: Active profile
+              - paragraph [ref=e441]: QA Test User
+            - generic [ref=e442]:
+              - paragraph [ref=e443]: Interface
+              - paragraph [ref=e444]: Dark theme
+            - generic [ref=e445]:
+              - paragraph [ref=e446]: Language
+              - paragraph [ref=e447]:
+                - img [ref=e448]
+                - text: English
+        - generic [ref=e453]:
+          - generic [ref=e454]:
+            - paragraph [ref=e455]: Explore
+            - generic [ref=e456]:
+              - link "Home" [ref=e457] [cursor=pointer]:
+                - /url: /
+              - link "My List" [ref=e458] [cursor=pointer]:
+                - /url: /profile
+              - link "Account" [ref=e459] [cursor=pointer]:
+                - /url: /login
+          - generic [ref=e460]:
+            - paragraph [ref=e461]: Status
+            - generic [ref=e463]:
+              - paragraph [ref=e464]:
+                - img [ref=e465]
+                - text: Experience updated
+              - paragraph [ref=e468]: Hero, search, profiles, and premium content rows are all active.
+      - generic [ref=e469]:
+        - paragraph [ref=e470]: 2026 StreamVault. All rights reserved.
+        - paragraph [ref=e471]: "Artwork mode: cinematic"
+```

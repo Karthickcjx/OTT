@@ -34,7 +34,7 @@ function HeroButton({ icon: Icon, children, primary = false, onClick, tone = 'de
 
 export default function Banner({ movie, activeProfile, isKidsMode, onPreview }) {
   const navigate = useNavigate();
-  const { addToWatchlist, removeFromWatchlist, isInWatchlist, settings } = useApp();
+  const { addToWatchlist, removeFromWatchlist, isInWatchlist, settings, isAuthenticated } = useApp();
 
   if (!movie) return null;
 
@@ -97,7 +97,7 @@ export default function Banner({ movie, activeProfile, isKidsMode, onPreview }) 
               {isSeries ? 'Series Premiere' : 'Featured Tonight'}
             </span>
 
-            {activeProfile && (
+            {activeProfile && isAuthenticated && (
               <span
                 className={cx(
                   'inline-flex items-center gap-2 rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.28em]',

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { registerUser } from '../services/authService';
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -9,6 +10,7 @@ export default function Signup() {
   const [form, setForm] = useState({ name: '', email: '', password: '', confirm: '' });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState('');
 
   const validate = () => {
     const errs = {};
@@ -17,26 +19,48 @@ export default function Signup() {
     else if (!/\S+@\S+\.\S+/.test(form.email)) errs.email = 'Enter a valid email';
     if (!form.password) errs.password = 'Password is required';
     else if (form.password.length < 6) errs.password = 'Min 6 characters';
-    if (form.password !== form.confirm) errs.confirm = 'Passwords do not match';
+    if (form.confirm && form.password !== form.confirm) errs.confirm = 'Passwords do not match';
     return errs;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setApiError('');
     const errs = validate();
     if (Object.keys(errs).length > 0) { setErrors(errs); return; }
 
     setLoading(true);
-    setTimeout(() => {
-      login({ name: form.name, email: form.email });
-      setLoading(false);
+
+    try {
+      const data = await registerUser({
+        name: form.name.trim(),
+        email: form.email,
+        password: form.password,
+      });
+
+      const token = data.token || data.jwt || data.accessToken;
+      const user = data.user || {
+        id: data.id,
+        name: data.name || form.name,
+        email: data.email || form.email,
+        role: data.role || 'user',
+      };
+
+      login(user, token);
       navigate('/');
-    }, 800);
+    } catch (err) {
+      setApiError(
+        err.friendlyMessage || err.response?.data?.message || 'Registration failed. Please try again.',
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (field) => (e) => {
     setForm((f) => ({ ...f, [field]: e.target.value }));
     setErrors((er) => ({ ...er, [field]: '' }));
+    setApiError('');
   };
 
   return (
@@ -63,6 +87,12 @@ export default function Signup() {
         </div>
 
         <div className="bg-gray-900/80 backdrop-blur border border-white/10 rounded-2xl p-8 shadow-2xl">
+          {apiError && (
+            <div className="mb-5 p-3 bg-red-900/20 border border-red-800/30 rounded-xl">
+              <p className="text-red-400 text-sm text-center font-medium">{apiError}</p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-4">
             {[
               { field: 'name', label: 'Full Name', type: 'text', placeholder: 'John Doe' },
@@ -71,8 +101,9 @@ export default function Signup() {
               { field: 'confirm', label: 'Confirm Password', type: 'password', placeholder: '••••••••' },
             ].map(({ field, label, type, placeholder }) => (
               <div key={field}>
-                <label className="block text-gray-400 text-sm font-medium mb-2">{label}</label>
+                <label htmlFor={`signup-${field}`} className="block text-gray-400 text-sm font-medium mb-2">{label}</label>
                 <input
+                  id={`signup-${field}`}
                   type={type}
                   value={form[field]}
                   onChange={handleChange(field)}

@@ -4,11 +4,11 @@ import {
   deleteMovie, deleteSeries,
   updateMovie, updateSeries,
 } from '../services/adminApi';
-import { MOCK_ADMIN_MOVIES, MOCK_ADMIN_SERIES } from '../services/mockAdminData';
 
-const USE_MOCK = !import.meta.env.VITE_API_BASE_URL ||
-  import.meta.env.VITE_API_BASE_URL === 'http://localhost:8080';
-
+/**
+ * Hook for managing admin content (movies + series).
+ * Always fetches from the backend API — no more mock gate.
+ */
 export function useAdminContent() {
   const [content, setContent] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -18,15 +18,18 @@ export function useAdminContent() {
     setLoading(true);
     setError(null);
     try {
-      if (USE_MOCK) {
-        await delay(400);
-        setContent([...MOCK_ADMIN_MOVIES, ...MOCK_ADMIN_SERIES]);
-      } else {
-        const [movies, series] = await Promise.all([fetchAdminMovies(), fetchAdminSeries()]);
-        setContent([...movies, ...series]);
-      }
+      const [movies, series] = await Promise.all([
+        fetchAdminMovies(),
+        fetchAdminSeries(),
+      ]);
+
+      // Ensure type field for filtering
+      const taggedMovies = (movies || []).map((m) => ({ ...m, type: m.type || 'movie' }));
+      const taggedSeries = (series || []).map((s) => ({ ...s, type: s.type || 'series' }));
+
+      setContent([...taggedMovies, ...taggedSeries]);
     } catch (err) {
-      setError(err?.response?.data?.message || 'Failed to load content');
+      setError(err?.response?.data?.message || err.friendlyMessage || 'Failed to load content');
     } finally {
       setLoading(false);
     }
@@ -35,24 +38,16 @@ export function useAdminContent() {
   useEffect(() => { load(); }, [load]);
 
   const remove = useCallback(async (item) => {
-    if (USE_MOCK) {
-      setContent((prev) => prev.filter((c) => c.id !== item.id));
-      return;
-    }
     if (item.type === 'series') await deleteSeries(item.id);
     else await deleteMovie(item.id);
     setContent((prev) => prev.filter((c) => c.id !== item.id));
   }, []);
 
   const update = useCallback(async (id, type, payload) => {
-    if (USE_MOCK) {
-      setContent((prev) => prev.map((c) => (c.id === id ? { ...c, ...payload } : c)));
-      return;
-    }
     const updated = type === 'series'
       ? await updateSeries(id, payload)
       : await updateMovie(id, payload);
-    setContent((prev) => prev.map((c) => (c.id === id ? updated : c)));
+    setContent((prev) => prev.map((c) => (c.id === id ? { ...c, ...updated } : c)));
   }, []);
 
   const addItem = useCallback((item) => {
@@ -63,8 +58,4 @@ export function useAdminContent() {
   const series = content.filter((c) => c.type === 'series');
 
   return { content, movies, series, loading, error, reload: load, remove, update, addItem };
-}
-
-function delay(ms) {
-  return new Promise((r) => setTimeout(r, ms));
 }

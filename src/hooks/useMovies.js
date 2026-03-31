@@ -1,14 +1,6 @@
 import { useEffect, useState } from 'react';
-import {
-  fetchNowPlaying,
-  fetchPopular,
-  fetchTopRated,
-  fetchTrending,
-} from '../services/tmdb';
-import { MOCK_MOVIES, MOCK_SERIES } from '../services/mockData';
+import { fetchMovies, fetchSeries } from '../services/movieService';
 import { normalizeContent } from '../utils/contentExperience';
-
-const USE_MOCK = !import.meta.env.VITE_TMDB_API_KEY;
 
 const INITIAL_ROWS = {
   trending: [],
@@ -18,6 +10,10 @@ const INITIAL_ROWS = {
   series: [],
 };
 
+/**
+ * Fetches movies + series from the Spring Boot backend
+ * and organizes them into display rows for the home page.
+ */
 export function useMovieRows() {
   const [rows, setRows] = useState(INITIAL_ROWS);
   const [loading, setLoading] = useState(true);
@@ -31,35 +27,33 @@ export function useMovieRows() {
       setError(null);
 
       try {
-        if (USE_MOCK) {
-          await Promise.resolve();
-          if (cancelled) return;
-
-          setRows({
-            trending: MOCK_MOVIES.slice(0, 8).map(normalizeContent),
-            popular: [...MOCK_MOVIES].reverse().slice(0, 8).map(normalizeContent),
-            topRated: MOCK_MOVIES.filter((_, index) => index % 2 === 0).map(normalizeContent),
-            nowPlaying: MOCK_MOVIES.filter((_, index) => index % 2 !== 0).map(normalizeContent),
-            series: MOCK_SERIES.map(normalizeContent),
-          });
-          return;
-        }
-
-        const [trending, popular, topRated, nowPlaying] = await Promise.all([
-          fetchTrending(),
-          fetchPopular(),
-          fetchTopRated(),
-          fetchNowPlaying(),
+        const [movies, series] = await Promise.all([
+          fetchMovies(),
+          fetchSeries(),
         ]);
 
         if (cancelled) return;
 
+        // Normalize all content to ensure `type` field is present
+        const normalizedMovies = (movies || []).map(normalizeContent);
+        const normalizedSeries = (series || []).map(normalizeContent);
+
+        // Distribute movies across rows for home page variety
+        const sortedByRating = [...normalizedMovies].sort(
+          (a, b) => (b.vote_average || b.rating || 0) - (a.vote_average || a.rating || 0),
+        );
+        const sortedByDate = [...normalizedMovies].sort(
+          (a, b) =>
+            new Date(b.release_date || b.releaseYear || 0).getTime() -
+            new Date(a.release_date || a.releaseYear || 0).getTime(),
+        );
+
         setRows({
-          trending: trending.map(normalizeContent),
-          popular: popular.map(normalizeContent),
-          topRated: topRated.map(normalizeContent),
-          nowPlaying: nowPlaying.map(normalizeContent),
-          series: MOCK_SERIES.map(normalizeContent),
+          trending: normalizedMovies.slice(0, 10),
+          popular: sortedByRating.slice(0, 10),
+          topRated: sortedByRating.slice(0, 8),
+          nowPlaying: sortedByDate.slice(0, 8),
+          series: normalizedSeries,
         });
       } catch (nextError) {
         if (!cancelled) setError(nextError);

@@ -100,6 +100,8 @@ export default function VideoPlayer({ title = 'Movie Title', videoUrl, onEnded }
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
 
+  console.log("Video URL:", videoUrl);
+
   return (
     <div
       ref={containerRef}
@@ -110,14 +112,16 @@ export default function VideoPlayer({ title = 'Movie Title', videoUrl, onEnded }
     >
       <video
         ref={videoRef}
+        key={videoUrl}
         className="w-full h-full object-contain"
-        src={videoUrl}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
         onEnded={() => { setPlaying(false); onEnded?.(); }}
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}
-      />
+      >
+        <source src={videoUrl} type="video/mp4" />
+      </video>
 
       {!playing && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">

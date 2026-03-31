@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { fetchMovieDetails, fetchSimilar } from '../services/tmdb';
-import { MOCK_MOVIES } from '../services/mockData';
+import { fetchMovieById } from '../services/movieService';
 
-const USE_MOCK = !import.meta.env.VITE_TMDB_API_KEY;
-
+/**
+ * Fetches a single movie's full details from GET /movies/:id
+ */
 export function useMovieDetails(id) {
   const [movie, setMovie] = useState(null);
   const [similar, setSimilar] = useState([]);
@@ -13,22 +13,30 @@ export function useMovieDetails(id) {
   useEffect(() => {
     if (!id) return;
 
-    if (USE_MOCK) {
-      const found = MOCK_MOVIES.find((m) => m.id === Number(id));
-      setMovie(found || MOCK_MOVIES[0]);
-      setSimilar(MOCK_MOVIES.filter((m) => m.id !== Number(id)).slice(0, 6));
-      setLoading(false);
-      return;
-    }
-
+    let cancelled = false;
     setLoading(true);
-    Promise.all([fetchMovieDetails(id), fetchSimilar(id)])
-      .then(([details, sim]) => {
-        setMovie(details);
-        setSimilar(sim.slice(0, 12));
+    setError(null);
+
+    fetchMovieById(id)
+      .then((data) => {
+        if (cancelled) return;
+        setMovie(data);
+
+        // If backend returns similarMovies or related, use those
+        const relatedItems =
+          data.similarMovies || data.similar || data.recommendations || [];
+        setSimilar(Array.isArray(relatedItems) ? relatedItems.slice(0, 12) : []);
       })
-      .catch(setError)
-      .finally(() => setLoading(false));
+      .catch((err) => {
+        if (!cancelled) setError(err);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [id]);
 
   return { movie, similar, loading, error };

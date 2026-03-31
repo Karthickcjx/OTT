@@ -25,15 +25,15 @@ const NAV_GROUPS = [
   {
     label: 'Content',
     items: [
-      { to: '/admin/upload', label: 'Upload Movie', icon: Film, accent: 'sky' },
-      { to: '/admin/upload-series', label: 'Upload Series', icon: Tv, accent: 'violet' },
-      { to: '/admin/content', label: 'Manage Content', icon: Clapperboard, accent: 'emerald' },
+      { to: '/admin/upload', label: 'Add Movie', icon: Film, accent: 'sky' },
+      { to: '/admin/upload-series', label: 'Add Series', icon: Tv, accent: 'violet' },
+      { to: '/admin/content', label: 'Library', icon: Clapperboard, accent: 'emerald' },
     ],
   },
   {
     label: 'Audience',
     items: [
-      { to: '/admin/users', label: 'Users', icon: Users, accent: 'amber' },
+      { to: '/admin/users', label: 'Accounts', icon: Users, accent: 'amber' },
     ],
   },
 ];

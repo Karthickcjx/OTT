@@ -2,38 +2,53 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useContentDetails } from '../hooks/useContentDetails';
 import { useApp } from '../context/AppContext';
-import EpisodeList from '../components/EpisodeList';
 import MovieRow from '../components/MovieRow';
 import Loader from '../components/Loader';
-import { IMG_BASE } from '../services/tmdb';
 import { PLACEHOLDER_COLORS } from '../services/mockData';
 
 export default function SeriesDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { content: series, similar, loading } = useContentDetails(id, 'series');
+  const { content: series, similar, loading, error } = useContentDetails(id, 'series');
   const { addToWatchlist, removeFromWatchlist, isInWatchlist } = useApp();
 
   const [activeSeason, setActiveSeason] = useState(1);
   const [imgError, setImgError] = useState(false);
 
   if (loading) return <Loader />;
+
+  if (error) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center text-gray-400 gap-3">
+        <p className="text-xl font-semibold text-red-400">Failed to load series</p>
+        <p className="text-sm">{error.friendlyMessage || 'Something went wrong'}</p>
+        <button
+          onClick={() => navigate('/')}
+          className="mt-2 text-blue-400 hover:text-blue-300 text-sm"
+        >
+          ← Back to Home
+        </button>
+      </div>
+    );
+  }
+
   if (!series) return (
     <div className="min-h-screen flex items-center justify-center text-gray-400">Series not found.</div>
   );
 
   const inWatchlist = isInWatchlist(series.id);
   const colorClass = PLACEHOLDER_COLORS[series.id % PLACEHOLDER_COLORS.length];
-  const backdropUrl = series.backdrop_path && !imgError
-    ? `${IMG_BASE}/original${series.backdrop_path}`
+  const backdropUrl = (series.bannerUrl || series.backdropUrl || series.backdrop_path) && !imgError
+    ? series.bannerUrl || series.backdropUrl || series.backdrop_path
     : null;
 
+  const genres = series.genres || (series.genre ? [{ id: 1, name: series.genre }] : []);
   const currentSeason = series.seasons?.find((s) => s.seasonNumber === activeSeason);
   const firstEpisode = currentSeason?.episodes?.[0];
 
   const toggleWatchlist = () => {
     if (inWatchlist) removeFromWatchlist(series.id);
-    else addToWatchlist(series);
+    else addToWatchlist({ ...series, type: 'series' });
   };
 
   const playEpisode = (seasonNum, epNum) => {
@@ -57,8 +72,8 @@ export default function SeriesDetails() {
             <span className="bg-purple-600/20 text-purple-300 border border-purple-600/30 text-xs font-semibold px-2.5 py-1 rounded-full">
               SERIES
             </span>
-            {series.genres?.slice(0, 2).map((g) => (
-              <span key={g.id} className="text-xs text-gray-400 font-medium">{g.name}</span>
+            {genres.slice(0, 2).map((g) => (
+              <span key={g.id || g.name} className="text-xs text-gray-400 font-medium">{g.name || g}</span>
             ))}
           </div>
 
@@ -67,20 +82,22 @@ export default function SeriesDetails() {
           <div className="flex items-center gap-4 text-sm text-gray-300 mb-4 flex-wrap">
             <span className="text-yellow-400 font-semibold flex items-center gap-1">
               <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.122-6.545L.488 6.91l6.561-.955L10 0l2.951 5.955 6.561.955-4.756 4.635 1.122 6.545z" /></svg>
-              {series.vote_average?.toFixed(1)}
+              {(series.vote_average || series.rating)?.toFixed?.(1) || 'N/A'}
             </span>
-            <span>{series.release_date?.slice(0, 4)}</span>
+            <span>{String(series.release_date || series.releaseYear || '').slice(0, 4)}</span>
             {series.seasons?.length > 0 && (
               <span>{series.seasons.length} Season{series.seasons.length !== 1 ? 's' : ''}</span>
             )}
             {series.seasons && (
               <span className="text-gray-500">
-                {series.seasons.reduce((s, x) => s + x.episodes.length, 0)} Episodes
+                {series.seasons.reduce((s, x) => s + (x.episodes?.length || 0), 0)} Episodes
               </span>
             )}
           </div>
 
-          <p className="text-gray-300 text-sm leading-relaxed line-clamp-2 mb-6 max-w-lg">{series.overview}</p>
+          <p className="text-gray-300 text-sm leading-relaxed line-clamp-2 mb-6 max-w-lg">
+            {series.overview || series.description}
+          </p>
 
           <div className="flex flex-wrap gap-3">
             {firstEpisode && (
@@ -113,7 +130,7 @@ export default function SeriesDetails() {
       <div className="px-6 md:px-12 py-10 max-w-6xl space-y-10">
         <div>
           <h2 className="text-white text-lg font-semibold mb-3">About</h2>
-          <p className="text-gray-300 leading-relaxed">{series.overview}</p>
+          <p className="text-gray-300 leading-relaxed">{series.overview || series.description}</p>
         </div>
 
         {series.seasons?.length > 0 && (
@@ -132,7 +149,7 @@ export default function SeriesDetails() {
                     }`}
                   >
                     Season {s.seasonNumber}
-                    <span className="ml-1.5 text-xs opacity-60">{s.episodes.length}ep</span>
+                    <span className="ml-1.5 text-xs opacity-60">{s.episodes?.length || 0}ep</span>
                   </button>
                 ))}
               </div>
@@ -140,7 +157,7 @@ export default function SeriesDetails() {
 
             {/* Episode grid */}
             <div className="space-y-1">
-              {currentSeason?.episodes.map((ep) => (
+              {currentSeason?.episodes?.map((ep) => (
                 <button
                   key={ep.episodeNumber}
                   onClick={() => playEpisode(activeSeason, ep.episodeNumber)}

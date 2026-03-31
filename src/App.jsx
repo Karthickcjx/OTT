@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
 import MainLayout from './layouts/MainLayout';
 import AdminRoute from './components/AdminRoute';
+import ProtectedRoute from './components/ProtectedRoute';
 import AdminLayout from './admin/components/AdminLayout';
 
 import Home from './pages/Home';
@@ -27,16 +28,20 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
 
-          {/* Main site */}
+          {/* Main site — public browse, protected profile/watch */}
           <Route element={<MainLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/movie/:id" element={<MovieDetails />} />
             <Route path="/series/:id" element={<SeriesDetails />} />
-            <Route path="/watch/:id" element={<WatchPage />} />
-            <Route path="/profile" element={<Profile />} />
+
+            {/* Protected user routes */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/watch/:id" element={<WatchPage />} />
+              <Route path="/profile" element={<Profile />} />
+            </Route>
           </Route>
 
-          {/* Admin panel - role-gated */}
+          {/* Admin panel — role-gated (ADMIN only) */}
           <Route element={<AdminRoute />}>
             <Route element={<AdminLayout />}>
               <Route path="/admin" element={<Dashboard />} />
