@@ -16,13 +16,13 @@ export default function MovieRow({
   const isLight = settings.theme === 'light' && !isKidsMode;
   const kidsRail = variant === 'kids';
 
-  const scroll = (direction) => {
-    if (!rowRef.current) return;
-    rowRef.current.scrollBy({
-      left: direction * (kidsRail ? 420 : 360),
-      behavior: 'smooth',
-    });
-  };
+    const scroll = (direction) => {
+      if (!rowRef.current) return;
+      rowRef.current.scrollBy({
+        left: direction * (kidsRail ? 680 : 640),
+        behavior: 'smooth',
+      });
+    };
 
   if (!movies.length) return null;
 

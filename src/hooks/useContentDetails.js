@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { fetchMovieById, fetchSeriesById } from '../services/movieService';
+import { normalizeContent } from '../utils/contentExperience';
 
 /**
  * Unified hook for both movie and series detail pages.
@@ -23,7 +24,7 @@ export function useContentDetails(id, typeHint = null) {
     fetchFn(id)
       .then((data) => {
         if (cancelled) return;
-        setContent({ ...data, type: typeHint || data.type || 'movie' });
+        setContent(normalizeContent({ ...data, type: typeHint || data.type || 'movie' }));
 
         const relatedItems =
           data.similarMovies || data.similarSeries || data.similar || data.recommendations || [];

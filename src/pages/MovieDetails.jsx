@@ -4,6 +4,7 @@ import { useMovieDetails } from '../hooks/useMovieDetails';
 import { useApp } from '../context/AppContext';
 import MovieRow from '../components/MovieRow';
 import Loader from '../components/Loader';
+import { getBackdropArtwork } from '../utils/streamArtwork';
 import { PLACEHOLDER_COLORS } from '../services/mockData';
 
 function GenreBadge({ name }) {
@@ -70,10 +71,8 @@ export default function MovieDetails() {
   const inWatchlist = isInWatchlist(movie.id);
   const colorClass = PLACEHOLDER_COLORS[movie.id % PLACEHOLDER_COLORS.length];
 
-  // Support both backend field names and TMDB-style names
-  const backdropUrl = (movie.bannerUrl || movie.backdropUrl || movie.backdrop_path) && !imgError
-    ? movie.bannerUrl || movie.backdropUrl || movie.backdrop_path
-    : null;
+  // Use the centralized artwork utility to resolve the best image URL
+  const backdropUrl = !imgError ? getBackdropArtwork(movie) : null;
 
   const genres = movie.genres || (movie.genre ? [{ id: 1, name: movie.genre }] : []);
   const cast = movie.credits?.cast?.slice(0, 10) || movie.cast?.slice(0, 10) || [];

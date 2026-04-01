@@ -28,6 +28,7 @@ com\ott\backend\config\DataSeeder.class
 com\ott\backend\dto\SeasonDto$SeasonDtoBuilder.class
 com\ott\backend\OttBackendApplication.class
 com\ott\backend\security\SecurityConfig.class
+com\ott\backend\config\WebConfig.class
 com\ott\backend\dto\UploadUrlRequest.class
 com\ott\backend\service\SeriesService.class
 com\ott\backend\entity\Series$SeriesBuilder.class

@@ -12,6 +12,7 @@ export const uploadFile = (file, onProgress) => {
 
   return api.post('/upload', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 0, // no timeout — video uploads can take several minutes
     onUploadProgress: (e) => {
       if (onProgress && e.total) onProgress(Math.round((e.loaded / e.total) * 100));
     },

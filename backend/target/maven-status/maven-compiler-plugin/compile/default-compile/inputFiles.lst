@@ -35,6 +35,7 @@ D:\My project\OTT\backend\src\main\java\com\ott\backend\entity\User.java
 D:\My project\OTT\backend\src\main\java\com\ott\backend\repository\WatchlistRepository.java
 D:\My project\OTT\backend\src\main\java\com\ott\backend\controller\SeriesController.java
 D:\My project\OTT\backend\src\main\java\com\ott\backend\security\JwtUtil.java
+D:\My project\OTT\backend\src\main\java\com\ott\backend\config\WebConfig.java
 D:\My project\OTT\backend\src\main\java\com\ott\backend\controller\MovieController.java
 D:\My project\OTT\backend\src\main\java\com\ott\backend\service\WatchlistService.java
 D:\My project\OTT\backend\src\main\java\com\ott\backend\dto\MovieRequest.java

@@ -7,13 +7,14 @@ import VideoPlayer from '../components/VideoPlayer';
 import EpisodeList from '../components/EpisodeList';
 import MovieRow from '../components/MovieRow';
 import Loader from '../components/Loader';
+import { getPosterArtwork } from '../utils/streamArtwork';
 import { cx } from '../admin/utils/cx';
 
 function MovieWatchLayout({ content, similar }) {
   return (
     <>
       <div className="overflow-hidden rounded-[32px] border border-white/10 bg-slate-950/72 shadow-[0_36px_90px_-52px_rgba(15,23,42,0.98)]">
-        <VideoPlayer title={content.title} videoUrl={content.videoUrl} />
+        <VideoPlayer title={content.title} videoUrl={content.videoUrl} posterUrl={getPosterArtwork(content)} />
       </div>
 
       <div className="mt-6">
@@ -88,6 +89,7 @@ function SeriesWatchLayout({
           <VideoPlayer
             title={episodeTitle}
             videoUrl={currentEpisode?.videoUrl}
+            posterUrl={getPosterArtwork(content)}
             onEnded={autoplay ? handleAutoplayNext : undefined}
           />
         </div>

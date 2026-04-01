@@ -40,7 +40,7 @@ aws:
   secret-access-key: ${AWS_SECRET_ACCESS_KEY:}
   region: ${AWS_REGION:us-east-1}
   s3:
-    bucket-name: ${AWS_S3_BUCKET:backenf-ott}
+    bucket-name: ${AWS_S3_BUCKET:}
 
 logging:
   level:

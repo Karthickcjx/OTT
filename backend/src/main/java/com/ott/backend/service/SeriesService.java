@@ -30,12 +30,14 @@ public class SeriesService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public SeriesDto getSeriesById(Long id) {
         Series series = seriesRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Series not found with id: " + id));
         return toDto(series);
     }
 
+    @Transactional
     public SeriesDto createSeries(SeriesRequest request) {
         Series series = Series.builder()
                 .title(request.getTitle())
@@ -45,7 +47,35 @@ public class SeriesService {
                 .thumbnailUrl(request.getThumbnailUrl())
                 .bannerUrl(request.getBannerUrl())
                 .build();
-        return toDto(seriesRepository.save(series));
+        series = seriesRepository.save(series);
+
+        if (request.getSeasons() != null) {
+            for (SeriesRequest.SeasonData sd : request.getSeasons()) {
+                Season season = Season.builder()
+                        .seasonNumber(sd.getSeasonNumber())
+                        .series(series)
+                        .build();
+                season = seasonRepository.save(season);
+
+                if (sd.getEpisodes() != null) {
+                    for (SeriesRequest.EpisodeData ed : sd.getEpisodes()) {
+                        String episodeTitle = (ed.getTitle() != null && !ed.getTitle().isBlank())
+                                ? ed.getTitle()
+                                : "Episode " + ed.getEpisodeNumber();
+                        Episode episode = Episode.builder()
+                                .title(episodeTitle)
+                                .episodeNumber(ed.getEpisodeNumber())
+                                .videoUrl(ed.getVideoUrl())
+                                .duration(ed.getDuration())
+                                .season(season)
+                                .build();
+                        episodeRepository.save(episode);
+                    }
+                }
+            }
+        }
+
+        return toDto(seriesRepository.findById(series.getId()).orElseThrow());
     }
 
     public SeriesDto updateSeries(Long id, SeriesRequest request) {

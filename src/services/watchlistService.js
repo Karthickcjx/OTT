@@ -15,7 +15,7 @@ export const fetchWatchlist = async () => {
  * @param {{ contentId: number, contentType: 'movie' | 'series' }} payload
  */
 export const addToWatchlist = async (contentId, contentType = 'movie') => {
-  const { data } = await api.post('/watchlist', { contentId, contentType });
+  const { data } = await api.post('/watchlist', { contentId, contentType: contentType.toUpperCase() });
   return data;
 };
 

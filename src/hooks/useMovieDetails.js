@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { fetchMovieById } from '../services/movieService';
+import { normalizeContent } from '../utils/contentExperience';
 
 /**
  * Fetches a single movie's full details from GET /movies/:id
@@ -20,7 +21,7 @@ export function useMovieDetails(id) {
     fetchMovieById(id)
       .then((data) => {
         if (cancelled) return;
-        setMovie(data);
+        setMovie(normalizeContent(data));
 
         // If backend returns similarMovies or related, use those
         const relatedItems =

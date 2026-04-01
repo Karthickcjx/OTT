@@ -22,12 +22,12 @@ export function useS3Upload() {
     setState({ progress: 0, uploading: true, url: null, error: null });
 
     try {
-      const { fileUrl } = await uploadFile(file, (progress) => {
+      const { url } = await uploadFile(file, (progress) => {
         setState((s) => ({ ...s, progress }));
       });
 
-      setState({ progress: 100, uploading: false, url: fileUrl, error: null });
-      return fileUrl;
+      setState({ progress: 100, uploading: false, url, error: null });
+      return url;
     } catch (err) {
       const message = err?.response?.data?.message || err.message || 'Upload failed';
       setState({ progress: 0, uploading: false, url: null, error: message });

@@ -65,6 +65,7 @@ export default function Banner({ movie, activeProfile, isKidsMode, onPreview }) 
       <img
         src={backdropUrl}
         alt={movie.title}
+        onError={(e) => { e.target.onerror = null; e.target.style.display = 'none'; }}
         className="absolute inset-0 h-full w-full object-cover object-center"
       />
 

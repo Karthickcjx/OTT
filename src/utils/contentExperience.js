@@ -20,6 +20,10 @@ export function normalizeContent(item) {
   return {
     ...item,
     type: getContentType(item),
+    // Map backend field names to what the UI components expect
+    overview: item.overview || item.description || '',
+    vote_average: item.vote_average ?? item.rating ?? null,
+    runtime: item.runtime || item.duration || null,
   };
 }
 

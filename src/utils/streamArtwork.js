@@ -167,12 +167,39 @@ function buildBackdropSvg(item, kidsMode = false) {
   return toDataUri(svg);
 }
 
+/**
+ * Normalize image URLs:
+ * - Full backend URLs like http://localhost:8080/uploads/... → /uploads/...
+ * - Already relative paths stay as-is
+ * - TMDB paths get prefixed with IMG_BASE
+ */
+function normalizeImageUrl(url) {
+  if (!url) return null;
+  // Strip absolute localhost origin so the Vite proxy handles it
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname === 'localhost') {
+      return parsed.pathname; // e.g. /uploads/abc.jpg
+    }
+  } catch {
+    // not a full URL — return as-is (already relative)
+  }
+  return url;
+}
+
 export function getPosterArtwork(item, kidsMode = false) {
+  const thumb = normalizeImageUrl(item?.thumbnailUrl);
+  if (thumb) return thumb;
   if (item?.poster_path) return `${IMG_BASE}/w500${item.poster_path}`;
   return buildPosterSvg(item, kidsMode);
 }
 
 export function getBackdropArtwork(item, kidsMode = false) {
+  // Prefer bannerUrl from backend, then thumbnailUrl as fallback, then TMDB
+  const banner = normalizeImageUrl(item?.bannerUrl);
+  if (banner) return banner;
+  const thumb = normalizeImageUrl(item?.thumbnailUrl);
+  if (thumb) return thumb;
   if (item?.backdrop_path) return `${IMG_BASE}/original${item.backdrop_path}`;
   return buildBackdropSvg(item, kidsMode);
 }

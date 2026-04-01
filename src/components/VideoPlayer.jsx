@@ -6,7 +6,7 @@ function formatTime(seconds) {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
-export default function VideoPlayer({ title = 'Movie Title', videoUrl, onEnded }) {
+export default function VideoPlayer({ title = 'Movie Title', videoUrl, posterUrl, onEnded }) {
   const videoRef = useRef(null);
   const containerRef = useRef(null);
   const progressRef = useRef(null);
@@ -20,6 +20,7 @@ export default function VideoPlayer({ title = 'Movie Title', videoUrl, onEnded }
   const [fullscreen, setFullscreen] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const [buffered, setBuffered] = useState(0);
+  const [videoError, setVideoError] = useState(false);
 
   const resetHideTimer = useCallback(() => {
     setShowControls(true);
@@ -32,6 +33,10 @@ export default function VideoPlayer({ title = 'Movie Title', videoUrl, onEnded }
   useEffect(() => {
     return () => clearTimeout(hideControlsTimer.current);
   }, []);
+
+  useEffect(() => {
+    setVideoError(false);
+  }, [videoUrl]);
 
   const togglePlay = () => {
     const v = videoRef.current;
@@ -100,8 +105,6 @@ export default function VideoPlayer({ title = 'Movie Title', videoUrl, onEnded }
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
 
-  console.log("Video URL:", videoUrl);
-
   return (
     <div
       ref={containerRef}
@@ -110,20 +113,31 @@ export default function VideoPlayer({ title = 'Movie Title', videoUrl, onEnded }
       onMouseLeave={() => playing && setShowControls(false)}
       onClick={togglePlay}
     >
-      <video
-        ref={videoRef}
-        key={videoUrl}
-        className="w-full h-full object-contain"
-        onTimeUpdate={handleTimeUpdate}
-        onLoadedMetadata={handleLoadedMetadata}
-        onEnded={() => { setPlaying(false); onEnded?.(); }}
-        onPlay={() => setPlaying(true)}
-        onPause={() => setPlaying(false)}
-      >
-        <source src={videoUrl} type="video/mp4" />
-      </video>
+      {videoError || !videoUrl ? (
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-gray-500">
+          <svg className="w-12 h-12 opacity-40" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.182 16.318A4.486 4.486 0 0012.016 15a4.486 4.486 0 00-3.198 1.318M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" />
+          </svg>
+          <p className="text-sm">{videoError ? 'Video unavailable — check S3 access or re-upload.' : 'No video source.'}</p>
+        </div>
+      ) : (
+        <video
+          ref={videoRef}
+          key={videoUrl}
+          className="w-full h-full object-contain"
+          poster={posterUrl || undefined}
+          onTimeUpdate={handleTimeUpdate}
+          onLoadedMetadata={handleLoadedMetadata}
+          onEnded={() => { setPlaying(false); onEnded?.(); }}
+          onPlay={() => setPlaying(true)}
+          onPause={() => setPlaying(false)}
+          onError={() => setVideoError(true)}
+        >
+          <source src={videoUrl} />
+        </video>
+      )}
 
-      {!playing && (
+      {!playing && !videoError && videoUrl && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
           <div className="w-20 h-20 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/20">
             <svg className="w-8 h-8 text-white fill-current ml-1" viewBox="0 0 24 24">
@@ -133,7 +147,7 @@ export default function VideoPlayer({ title = 'Movie Title', videoUrl, onEnded }
         </div>
       )}
 
-      <div
+      {!videoError && videoUrl && <div
         className={`absolute inset-0 flex flex-col justify-between p-4 md:p-6 transition-opacity duration-300 ${
           showControls ? 'opacity-100' : 'opacity-0'
         }`}
@@ -229,7 +243,7 @@ export default function VideoPlayer({ title = 'Movie Title', videoUrl, onEnded }
             </button>
           </div>
         </div>
-      </div>
+      </div>}
     </div>
   );
 }

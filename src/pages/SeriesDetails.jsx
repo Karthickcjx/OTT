@@ -4,6 +4,7 @@ import { useContentDetails } from '../hooks/useContentDetails';
 import { useApp } from '../context/AppContext';
 import MovieRow from '../components/MovieRow';
 import Loader from '../components/Loader';
+import { getBackdropArtwork } from '../utils/streamArtwork';
 import { PLACEHOLDER_COLORS } from '../services/mockData';
 
 export default function SeriesDetails() {
@@ -38,9 +39,7 @@ export default function SeriesDetails() {
 
   const inWatchlist = isInWatchlist(series.id);
   const colorClass = PLACEHOLDER_COLORS[series.id % PLACEHOLDER_COLORS.length];
-  const backdropUrl = (series.bannerUrl || series.backdropUrl || series.backdrop_path) && !imgError
-    ? series.bannerUrl || series.backdropUrl || series.backdrop_path
-    : null;
+  const backdropUrl = !imgError ? getBackdropArtwork(series) : null;
 
   const genres = series.genres || (series.genre ? [{ id: 1, name: series.genre }] : []);
   const currentSeason = series.seasons?.find((s) => s.seasonNumber === activeSeason);

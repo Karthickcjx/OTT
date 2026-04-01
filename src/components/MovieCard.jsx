@@ -36,26 +36,27 @@ export default function MovieCard({ movie, variant = 'default', onPreview }) {
     <article
       className={cx(
         'group/card relative flex-shrink-0 cursor-pointer',
-        kidsCard ? 'w-52 sm:w-56 lg:w-60' : 'w-40 sm:w-44 lg:w-48',
+        kidsCard ? 'w-[280px] sm:w-[320px] lg:w-[360px]' : 'w-64 sm:w-72 lg:w-80',
       )}
       onClick={() => navigate(detailPath)}
     >
       <div
         className={cx(
-          'relative overflow-hidden border transition-all duration-300 ease-in-out group-hover/card:-translate-y-1 group-hover/card:scale-[1.03]',
+          'relative overflow-hidden border transition-transform duration-300 ease-in-out group-hover/card:z-10 group-hover/card:scale-110',
           kidsCard
-            ? 'aspect-[4/5] rounded-[30px] border-amber-300/18 bg-white/[0.06] group-hover/card:shadow-[0_26px_70px_-38px_rgba(251,191,36,0.45)]'
-            : 'aspect-[2/3] rounded-[28px] border-white/10 bg-white/[0.05] group-hover/card:shadow-[0_30px_80px_-44px_rgba(15,23,42,0.95)]',
+            ? 'aspect-video rounded-[16px] border-amber-300/18 bg-white/[0.06] group-hover/card:shadow-[0_26px_70px_-38px_rgba(251,191,36,0.45)]'
+            : 'aspect-video rounded-[12px] border-white/10 bg-white/[0.05] group-hover/card:shadow-[0_30px_80px_-44px_rgba(15,23,42,0.95)]',
         )}
       >
         <img
           src={getPosterArtwork(movie, kidsCard)}
           alt={movie.title}
           loading="lazy"
-          className="h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover/card:scale-105"
+          onError={(e) => { e.target.onerror = null; e.target.src = '/placeholder-16-9.svg'; }}
+          className="h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover/card:scale-110"
         />
 
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0.04),rgba(2,6,23,0.12)_38%,rgba(2,6,23,0.82)_100%)]" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-900/40 to-transparent" />
 
         <div className="absolute left-4 right-4 top-4 flex items-start justify-between gap-3">
           <div className="flex flex-wrap gap-2">
