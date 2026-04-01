@@ -94,7 +94,6 @@ mvn spring-boot:run
 ### 3️⃣ Frontend Setup (React)
 
 ```bash
-cd frontend
 npm install
 npm run dev
 ```
