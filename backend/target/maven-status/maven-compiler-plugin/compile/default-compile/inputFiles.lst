@@ -47,6 +47,7 @@ D:\My project\OTT\backend\src\main\java\com\ott\backend\security\SecurityConfig.
 D:\My project\OTT\backend\src\main\java\com\ott\backend\dto\EpisodeDto.java
 D:\My project\OTT\backend\src\main\java\com\ott\backend\dto\WatchlistRequest.java
 D:\My project\OTT\backend\src\main\java\com\ott\backend\controller\SpaController.java
+D:\My project\OTT\backend\src\main\java\com\ott\backend\controller\SearchController.java
 D:\My project\OTT\backend\src\main\java\com\ott\backend\dto\EpisodeRequest.java
 D:\My project\OTT\backend\src\main\java\com\ott\backend\exception\ResourceNotFoundException.java
 D:\My project\OTT\backend\src\main\java\com\ott\backend\repository\UserRepository.java

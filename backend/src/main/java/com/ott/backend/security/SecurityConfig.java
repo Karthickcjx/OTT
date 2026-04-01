@@ -45,6 +45,7 @@ public class SecurityConfig {
                 // Public GET endpoints
                 .requestMatchers(HttpMethod.GET, "/api/movies/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/series/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/search").hasAnyRole("USER", "ADMIN")
                 // ADMIN-only write operations
                 .requestMatchers(HttpMethod.POST, "/api/movies/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/movies/**").hasRole("ADMIN")
