@@ -53,6 +53,7 @@ export default function Home() {
               style={{ animationDelay: `${index * 80}ms` }}
             >
               <MovieRow
+                id={row.key}
                 title={row.title}
                 subtitle={row.subtitle}
                 movies={row.items}
@@ -63,7 +64,7 @@ export default function Home() {
           ))}
 
           {!showcaseRows.length && (
-            <section className="stream-card rounded-[32px] px-6 py-10 text-center">
+            <section className="stream-card rounded-xl px-6 py-10 text-center">
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-amber-300/25 bg-amber-300/10 text-amber-200">
                 <Star className="h-7 w-7" />
               </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { fetchMovies, fetchSeries } from '../services/movieService';
+import { MOCK_MOVIES, MOCK_SERIES } from '../services/mockData';
 import { normalizeContent } from '../utils/contentExperience';
 
 const INITIAL_ROWS = {
@@ -56,7 +57,27 @@ export function useMovieRows() {
           series: normalizedSeries,
         });
       } catch (nextError) {
-        if (!cancelled) setError(nextError);
+        if (!cancelled) {
+          const fallbackMovies = MOCK_MOVIES.map(normalizeContent);
+          const fallbackSeries = MOCK_SERIES.map(normalizeContent);
+          const sortedByRating = [...fallbackMovies].sort(
+            (a, b) => (b.vote_average || b.rating || 0) - (a.vote_average || a.rating || 0),
+          );
+          const sortedByDate = [...fallbackMovies].sort(
+            (a, b) =>
+              new Date(b.release_date || b.releaseYear || 0).getTime() -
+              new Date(a.release_date || a.releaseYear || 0).getTime(),
+          );
+
+          setRows({
+            trending: fallbackMovies.slice(0, 10),
+            popular: sortedByRating.slice(0, 10),
+            topRated: sortedByRating.slice(0, 8),
+            nowPlaying: sortedByDate.slice(0, 8),
+            series: fallbackSeries,
+          });
+          setError(nextError);
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }

@@ -1,6 +1,18 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  Frown,
+  Maximize,
+  Minimize,
+  Pause,
+  Play,
+  RotateCcw,
+  RotateCw,
+  Volume2,
+  VolumeX,
+} from 'lucide-react';
 
 function formatTime(seconds) {
+  if (!Number.isFinite(seconds)) return '0:00';
   const m = Math.floor(seconds / 60);
   const s = Math.floor(seconds % 60);
   return `${m}:${s.toString().padStart(2, '0')}`;
@@ -35,12 +47,20 @@ export default function VideoPlayer({ title = 'Movie Title', videoUrl, posterUrl
   }, []);
 
   useEffect(() => {
-    setVideoError(false);
+    const timeout = window.setTimeout(() => {
+      setVideoError(false);
+      setCurrentTime(0);
+      setDuration(0);
+      setBuffered(0);
+    }, 0);
+
+    return () => window.clearTimeout(timeout);
   }, [videoUrl]);
 
   const togglePlay = () => {
     const v = videoRef.current;
     if (!v) return;
+
     if (v.paused) {
       v.play();
       setPlaying(true);
@@ -57,17 +77,17 @@ export default function VideoPlayer({ title = 'Movie Title', videoUrl, posterUrl
     setMuted(v.muted);
   };
 
-  const handleVolumeChange = (e) => {
-    const val = parseFloat(e.target.value);
-    if (videoRef.current) videoRef.current.volume = val;
-    setVolume(val);
-    setMuted(val === 0);
+  const handleVolumeChange = (event) => {
+    const nextVolume = Number.parseFloat(event.target.value);
+    if (videoRef.current) videoRef.current.volume = nextVolume;
+    setVolume(nextVolume);
+    setMuted(nextVolume === 0);
   };
 
-  const handleSeek = (e) => {
-    if (!progressRef.current || !videoRef.current) return;
+  const handleSeek = (event) => {
+    if (!progressRef.current || !videoRef.current || !duration) return;
     const rect = progressRef.current.getBoundingClientRect();
-    const ratio = (e.clientX - rect.left) / rect.width;
+    const ratio = Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width));
     const time = ratio * duration;
     videoRef.current.currentTime = time;
     setCurrentTime(time);
@@ -76,8 +96,9 @@ export default function VideoPlayer({ title = 'Movie Title', videoUrl, posterUrl
   const handleTimeUpdate = () => {
     const v = videoRef.current;
     if (!v) return;
+
     setCurrentTime(v.currentTime);
-    if (v.buffered.length > 0) {
+    if (v.buffered.length > 0 && v.duration) {
       setBuffered((v.buffered.end(v.buffered.length - 1) / v.duration) * 100);
     }
   };
@@ -97,38 +118,41 @@ export default function VideoPlayer({ title = 'Movie Title', videoUrl, posterUrl
     }
   };
 
-  const skip = (secs) => {
-    if (videoRef.current) {
-      videoRef.current.currentTime = Math.max(0, Math.min(duration, currentTime + secs));
-    }
+  const skip = (seconds) => {
+    if (!videoRef.current) return;
+    videoRef.current.currentTime = Math.max(0, Math.min(duration, currentTime + seconds));
   };
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
+  const hasSource = Boolean(videoUrl) && !videoError;
 
   return (
     <div
       ref={containerRef}
-      className="relative w-full bg-black aspect-video select-none"
+      className="relative aspect-video w-full select-none bg-black"
       onMouseMove={resetHideTimer}
       onMouseLeave={() => playing && setShowControls(false)}
       onClick={togglePlay}
     >
-      {videoError || !videoUrl ? (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-gray-500">
-          <svg className="w-12 h-12 opacity-40" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15.182 16.318A4.486 4.486 0 0012.016 15a4.486 4.486 0 00-3.198 1.318M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" />
-          </svg>
-          <p className="text-sm">{videoError ? 'Video unavailable — check S3 access or re-upload.' : 'No video source.'}</p>
+      {!hasSource ? (
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-slate-500">
+          <Frown className="h-12 w-12 opacity-50" />
+          <p className="text-sm">
+            {videoError ? 'Video unavailable. Check S3 access or re-upload.' : 'No video source.'}
+          </p>
         </div>
       ) : (
         <video
           ref={videoRef}
           key={videoUrl}
-          className="w-full h-full object-contain"
+          className="h-full w-full object-contain"
           poster={posterUrl || undefined}
           onTimeUpdate={handleTimeUpdate}
           onLoadedMetadata={handleLoadedMetadata}
-          onEnded={() => { setPlaying(false); onEnded?.(); }}
+          onEnded={() => {
+            setPlaying(false);
+            onEnded?.();
+          }}
           onPlay={() => setPlaying(true)}
           onPause={() => setPlaying(false)}
           onError={() => setVideoError(true)}
@@ -137,113 +161,115 @@ export default function VideoPlayer({ title = 'Movie Title', videoUrl, posterUrl
         </video>
       )}
 
-      {!playing && !videoError && videoUrl && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-20 h-20 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/20">
-            <svg className="w-8 h-8 text-white fill-current ml-1" viewBox="0 0 24 24">
-              <path d="M8 5v14l11-7z" />
-            </svg>
+      {!playing && hasSource && (
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <div className="flex h-20 w-20 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white shadow-[0_0_42px_-18px_rgba(236,72,153,0.96)] backdrop-blur-sm">
+            <Play className="ml-1 h-8 w-8 fill-current" />
           </div>
         </div>
       )}
 
-      {!videoError && videoUrl && <div
-        className={`absolute inset-0 flex flex-col justify-between p-4 md:p-6 transition-opacity duration-300 ${
-          showControls ? 'opacity-100' : 'opacity-0'
-        }`}
-        style={{ background: showControls ? 'linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 40%, rgba(0,0,0,0.3) 100%)' : 'transparent' }}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="text-white font-semibold text-lg drop-shadow">{title}</div>
+      {hasSource && (
+        <div
+          className={`absolute inset-0 flex flex-col justify-between p-4 transition-opacity duration-300 md:p-6 ${
+            showControls ? 'opacity-100' : 'opacity-0'
+          }`}
+          style={{
+            background: showControls
+              ? 'linear-gradient(to top, rgba(0,0,0,0.82) 0%, transparent 42%, rgba(0,0,0,0.35) 100%)'
+              : 'transparent',
+          }}
+          onClick={(event) => event.stopPropagation()}
+        >
+          <div className="text-lg font-semibold text-white drop-shadow">{title}</div>
 
-        <div className="space-y-3">
-          <div
-            ref={progressRef}
-            className="relative w-full h-1.5 bg-white/20 rounded-full cursor-pointer group/progress"
-            onClick={handleSeek}
-          >
+          <div className="space-y-3">
             <div
-              className="absolute top-0 left-0 h-full bg-white/30 rounded-full"
-              style={{ width: `${buffered}%` }}
-            />
-            <div
-              className="absolute top-0 left-0 h-full bg-blue-500 rounded-full transition-all"
-              style={{ width: `${progress}%` }}
-            />
-            <div
-              className="absolute top-1/2 -translate-y-1/2 w-3.5 h-3.5 bg-white rounded-full shadow-md opacity-0 group-hover/progress:opacity-100 transition-opacity -translate-x-1/2"
-              style={{ left: `${progress}%` }}
-            />
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 md:gap-4">
-              <button onClick={togglePlay} className="text-white hover:text-blue-400 transition-colors p-1">
-                {playing ? (
-                  <svg className="w-7 h-7 fill-current" viewBox="0 0 24 24">
-                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
-                  </svg>
-                ) : (
-                  <svg className="w-7 h-7 fill-current" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                )}
-              </button>
-
-              <button onClick={() => skip(-10)} className="text-white hover:text-blue-400 transition-colors p-1">
-                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                  <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z" />
-                </svg>
-              </button>
-
-              <button onClick={() => skip(10)} className="text-white hover:text-blue-400 transition-colors p-1">
-                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                  <path d="M12 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z" />
-                </svg>
-              </button>
-
-              <div className="flex items-center gap-2">
-                <button onClick={toggleMute} className="text-white hover:text-blue-400 transition-colors p-1">
-                  {muted || volume === 0 ? (
-                    <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                      <path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z" />
-                    </svg>
-                  ) : (
-                    <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                      <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z" />
-                    </svg>
-                  )}
-                </button>
-                <input
-                  type="range"
-                  min="0"
-                  max="1"
-                  step="0.05"
-                  value={muted ? 0 : volume}
-                  onChange={handleVolumeChange}
-                  className="w-20 h-1 accent-blue-500 cursor-pointer"
-                />
-              </div>
-
-              <span className="text-white text-sm font-mono tabular-nums">
-                {formatTime(currentTime)} / {formatTime(duration)}
-              </span>
+              ref={progressRef}
+              className="group/progress relative h-2 w-full cursor-pointer rounded-full bg-white/20"
+              onClick={handleSeek}
+            >
+              <div
+                className="absolute left-0 top-0 h-full rounded-full bg-white/30"
+                style={{ width: `${buffered}%` }}
+              />
+              <div
+                className="absolute left-0 top-0 h-full rounded-full playnix-gradient-bg shadow-[0_0_22px_-10px_rgba(236,72,153,0.95)] transition-all"
+                style={{ width: `${progress}%` }}
+              />
+              <div
+                className="absolute top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white opacity-0 shadow-md transition-opacity group-hover/progress:opacity-100"
+                style={{ left: `${progress}%` }}
+              />
             </div>
 
-            <button onClick={toggleFullscreen} className="text-white hover:text-blue-400 transition-colors p-1">
-              {fullscreen ? (
-                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                  <path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z" />
-                </svg>
-              ) : (
-                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                  <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
-                </svg>
-              )}
-            </button>
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex min-w-0 items-center gap-2 md:gap-4">
+                <button
+                  type="button"
+                  onClick={togglePlay}
+                  className="p-1 text-white transition-colors hover:text-fuchsia-300"
+                  aria-label={playing ? 'Pause' : 'Play'}
+                >
+                  {playing ? <Pause className="h-7 w-7 fill-current" /> : <Play className="h-7 w-7 fill-current" />}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => skip(-10)}
+                  className="p-1 text-white transition-colors hover:text-fuchsia-300"
+                  aria-label="Skip back 10 seconds"
+                >
+                  <RotateCcw className="h-5 w-5" />
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => skip(10)}
+                  className="p-1 text-white transition-colors hover:text-fuchsia-300"
+                  aria-label="Skip forward 10 seconds"
+                >
+                  <RotateCw className="h-5 w-5" />
+                </button>
+
+                <div className="hidden items-center gap-2 sm:flex">
+                  <button
+                    type="button"
+                    onClick={toggleMute}
+                    className="p-1 text-white transition-colors hover:text-fuchsia-300"
+                    aria-label={muted || volume === 0 ? 'Unmute' : 'Mute'}
+                  >
+                    {muted || volume === 0 ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
+                  </button>
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.05"
+                    value={muted ? 0 : volume}
+                    onChange={handleVolumeChange}
+                    className="h-1 w-20 cursor-pointer accent-pink-500"
+                    aria-label="Volume"
+                  />
+                </div>
+
+                <span className="truncate font-mono text-xs tabular-nums text-white sm:text-sm">
+                  {formatTime(currentTime)} / {formatTime(duration)}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={toggleFullscreen}
+                className="p-1 text-white transition-colors hover:text-fuchsia-300"
+                aria-label={fullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+              >
+                {fullscreen ? <Minimize className="h-5 w-5" /> : <Maximize className="h-5 w-5" />}
+              </button>
+            </div>
           </div>
         </div>
-      </div>}
+      )}
     </div>
   );
 }

@@ -51,7 +51,7 @@ export default function Modal({ movie, onClose }) {
       <div className="absolute inset-0 bg-slate-950/78 backdrop-blur-xl" />
 
       <div
-        className="relative z-10 w-full max-w-4xl overflow-hidden rounded-[36px] border border-white/10 bg-[linear-gradient(180deg,rgba(2,6,23,0.98),rgba(15,23,42,0.96))] shadow-[0_50px_120px_-48px_rgba(15,23,42,0.98)]"
+        className="relative z-10 w-full max-w-4xl overflow-hidden rounded-xl border border-white/10 bg-[linear-gradient(180deg,rgba(11,11,15,0.98),rgba(18,18,24,0.96))] shadow-[0_50px_120px_-48px_rgba(0,0,0,0.98)]"
         onClick={(event) => event.stopPropagation()}
       >
         <button
@@ -78,7 +78,7 @@ export default function Modal({ movie, onClose }) {
                   'inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-[11px] font-semibold uppercase tracking-[0.24em]',
                   isSeries
                     ? 'border-fuchsia-300/25 bg-fuchsia-300/14 text-fuchsia-100'
-                    : 'border-sky-300/25 bg-sky-300/14 text-sky-100',
+                    : 'border-fuchsia-300/25 bg-fuchsia-300/14 text-fuchsia-100',
                 )}
               >
                 {isSeries ? <Tv className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5 fill-current" />}
@@ -125,10 +125,10 @@ export default function Modal({ movie, onClose }) {
                   navigate(watchPath);
                   onClose();
                 }}
-                className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:bg-slate-100"
+                className="playnix-button-primary inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-semibold transition-all duration-300 ease-in-out hover:-translate-y-0.5"
               >
                 <Play className="h-4 w-4 fill-current" />
-                Play now
+                Watch Now
               </button>
 
               <button
@@ -153,7 +153,7 @@ export default function Modal({ movie, onClose }) {
             </div>
           </div>
 
-          <aside className="rounded-[28px] border border-white/10 bg-white/[0.04] p-5">
+          <aside className="rounded-xl border border-white/10 bg-white/[0.04] p-5">
             <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-500">
               Preview Notes
             </p>
@@ -165,7 +165,7 @@ export default function Modal({ movie, onClose }) {
               ].map((item) => (
                 <div
                   key={item.label}
-                  className="rounded-[22px] border border-white/10 bg-slate-950/55 px-4 py-3"
+                  className="rounded-lg border border-white/10 bg-[#0b0b0f]/55 px-4 py-3"
                 >
                   <p className="text-xs uppercase tracking-[0.22em] text-slate-500">{item.label}</p>
                   <p className="mt-2 text-sm font-semibold text-white">{item.value}</p>

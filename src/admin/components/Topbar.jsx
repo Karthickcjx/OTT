@@ -11,7 +11,7 @@ export default function Topbar({ title, description }) {
         <div className="relative flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-500">
-              StreamVault Control Room
+              Playnix Control Room
             </p>
             <div className="mt-2 flex flex-col gap-2 xl:flex-row xl:items-end xl:gap-4">
               <h1 className="admin-display text-2xl font-semibold text-white sm:text-[1.85rem]">
@@ -44,7 +44,7 @@ export default function Topbar({ title, description }) {
                 </p>
                 <p className="text-xs text-slate-500">Administrator</p>
               </div>
-              <div className="grid h-11 w-11 place-items-center rounded-2xl border border-sky-300/20 bg-gradient-to-br from-sky-400 via-blue-500 to-indigo-600 text-sm font-bold text-white shadow-[0_14px_30px_-18px_rgba(59,130,246,0.95)]">
+              <div className="grid h-11 w-11 place-items-center rounded-xl border border-fuchsia-300/20 playnix-gradient-bg text-sm font-bold text-white shadow-[0_14px_30px_-18px_rgba(236,72,153,0.95)]">
                 {user?.name?.charAt(0).toUpperCase() ?? 'A'}
               </div>
             </div>

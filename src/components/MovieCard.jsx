@@ -12,7 +12,7 @@ function RatingBadge({ score }) {
   if (!score) return null;
 
   return (
-    <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/20 bg-amber-300/12 px-2.5 py-1 text-[11px] font-semibold text-amber-50">
+    <span className="inline-flex items-center gap-1 rounded-full border border-amber-300/20 bg-amber-300/12 px-2.5 py-1 text-[11px] font-semibold text-amber-50 shadow-[0_0_22px_-16px_rgba(251,191,36,0.95)]">
       <Star className="h-3 w-3 fill-current" />
       {score.toFixed(1)}
     </span>
@@ -35,7 +35,7 @@ export default function MovieCard({ movie, variant = 'default', onPreview }) {
   return (
     <article
       className={cx(
-        'group/card relative flex-shrink-0 cursor-pointer',
+        'group/card relative flex-shrink-0 snap-start cursor-pointer',
         kidsCard ? 'w-[280px] sm:w-[320px] lg:w-[360px]' : 'w-64 sm:w-72 lg:w-80',
       )}
       onClick={() => navigate(detailPath)}
@@ -45,7 +45,7 @@ export default function MovieCard({ movie, variant = 'default', onPreview }) {
           'relative overflow-hidden border transition-transform duration-300 ease-in-out group-hover/card:z-10 group-hover/card:scale-110',
           kidsCard
             ? 'aspect-video rounded-[16px] border-amber-300/18 bg-white/[0.06] group-hover/card:shadow-[0_26px_70px_-38px_rgba(251,191,36,0.45)]'
-            : 'aspect-video rounded-[12px] border-white/10 bg-white/[0.05] group-hover/card:shadow-[0_30px_80px_-44px_rgba(15,23,42,0.95)]',
+            : 'aspect-video rounded-xl border-white/10 bg-white/[0.05] group-hover/card:border-fuchsia-300/28 group-hover/card:shadow-[0_24px_70px_-36px_rgba(236,72,153,0.55)]',
         )}
       >
         <img
@@ -67,7 +67,7 @@ export default function MovieCard({ movie, variant = 'default', onPreview }) {
                   ? 'border-fuchsia-300/25 bg-fuchsia-300/14 text-fuchsia-100'
                   : kidsCard
                   ? 'border-amber-300/25 bg-amber-300/14 text-amber-50'
-                  : 'border-sky-300/25 bg-sky-300/14 text-sky-100',
+                  : 'border-fuchsia-300/25 bg-fuchsia-300/14 text-fuchsia-100',
               )}
             >
               {isSeries ? <Tv className="h-3 w-3" /> : <Play className="h-3 w-3 fill-current" />}
@@ -94,7 +94,7 @@ export default function MovieCard({ movie, variant = 'default', onPreview }) {
                   event.stopPropagation();
                   navigate(watchPath);
                 }}
-                className="inline-flex flex-1 items-center justify-center gap-2 rounded-full bg-white px-4 py-2.5 text-sm font-semibold text-slate-950 transition-all duration-300 ease-in-out hover:bg-slate-100"
+                className="playnix-button-primary inline-flex flex-1 items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition-all duration-300 ease-in-out hover:scale-[1.02]"
               >
                 <Play className="h-4 w-4 fill-current" />
                 Play
@@ -111,7 +111,7 @@ export default function MovieCard({ movie, variant = 'default', onPreview }) {
 
                   navigate(detailPath);
                 }}
-                className="inline-flex items-center justify-center rounded-full border border-white/14 bg-white/[0.08] px-4 py-2.5 text-white transition-all duration-300 ease-in-out hover:bg-white/[0.14]"
+                className="inline-flex items-center justify-center rounded-full border border-white/14 bg-white/[0.08] px-4 py-2.5 text-white transition-all duration-300 ease-in-out hover:border-fuchsia-300/30 hover:bg-white/[0.14]"
                 aria-label={`Open info for ${movie.title}`}
               >
                 <Info className="h-4 w-4" />

@@ -25,7 +25,7 @@ export default function SeriesDetails() {
         <p className="text-sm">{error.friendlyMessage || 'Something went wrong'}</p>
         <button
           onClick={() => navigate('/')}
-          className="mt-2 text-blue-400 hover:text-blue-300 text-sm"
+          className="mt-2 text-fuchsia-300 hover:text-white text-sm"
         >
           ← Back to Home
         </button>
@@ -102,17 +102,17 @@ export default function SeriesDetails() {
             {firstEpisode && (
               <button
                 onClick={() => playEpisode(activeSeason, firstEpisode.episodeNumber)}
-                className="flex items-center gap-2 bg-white hover:bg-gray-200 text-black font-semibold px-6 py-2.5 rounded-lg transition-all hover:scale-105 active:scale-95"
+                className="playnix-button-primary flex items-center gap-2 rounded-full px-6 py-2.5 font-semibold transition-all hover:scale-105 active:scale-95"
               >
                 <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
-                Play S1E1
+                Watch S1E1
               </button>
             )}
             <button
               onClick={toggleWatchlist}
               className={`flex items-center gap-2 font-semibold px-6 py-2.5 rounded-lg border transition-all hover:scale-105 active:scale-95 ${
                 inWatchlist
-                  ? 'bg-blue-600 border-blue-600 text-white'
+                  ? 'bg-fuchsia-500/18 border-fuchsia-300/35 text-white'
                   : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
               }`}
             >
@@ -143,7 +143,7 @@ export default function SeriesDetails() {
                     onClick={() => setActiveSeason(s.seasonNumber)}
                     className={`px-4 py-1.5 rounded-xl text-sm font-medium border transition-all ${
                       activeSeason === s.seasonNumber
-                        ? 'bg-blue-600/20 border-blue-500/40 text-blue-300'
+                        ? 'bg-fuchsia-500/18 border-fuchsia-300/35 text-fuchsia-100'
                         : 'bg-transparent border-white/10 text-gray-400 hover:text-white hover:border-white/20'
                     }`}
                   >
@@ -162,8 +162,8 @@ export default function SeriesDetails() {
                   onClick={() => playEpisode(activeSeason, ep.episodeNumber)}
                   className="w-full flex items-center gap-4 p-4 rounded-xl hover:bg-white/5 border border-transparent hover:border-white/5 transition-all text-left group"
                 >
-                  <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-blue-600/20 transition-colors">
-                    <svg className="w-5 h-5 text-gray-500 group-hover:text-blue-400 fill-current transition-colors" viewBox="0 0 24 24">
+                  <div className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-fuchsia-500/18 transition-colors">
+                    <svg className="w-5 h-5 text-gray-500 group-hover:text-fuchsia-300 fill-current transition-colors" viewBox="0 0 24 24">
                       <path d="M8 5v14l11-7z" />
                     </svg>
                   </div>

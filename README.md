@@ -104,10 +104,11 @@ npm run dev
 
 ### 4️⃣ Database Setup (MySQL)
 
-* Create database:
+* Admin credentials:
 
-```sql
-CREATE DATABASE streamvault;
+```admin
+Email: admin@streamvault.com
+Password: admin123
 ```
 
 * Update credentials in:

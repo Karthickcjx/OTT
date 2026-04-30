@@ -27,8 +27,8 @@ export default function MainLayout() {
       )}
     >
       <div className="pointer-events-none fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.08),transparent_32%)]" />
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(2,6,23,0),rgba(2,6,23,0.24)_55%,rgba(2,6,23,0.5))]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.035),rgba(11,11,15,0.12)_35%,rgba(11,11,15,0.72))]" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(139,92,246,0.04),transparent_38%,rgba(251,146,60,0.035))]" />
       </div>
 
       <Navbar />

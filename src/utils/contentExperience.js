@@ -172,17 +172,17 @@ export function buildShowcaseRows(rows, recentlyWatched, activeProfile, isAuthen
       variant: 'default',
     },
     {
+      key: 'top-picks',
+      title: 'Recommended for You',
+      subtitle: 'A premium mix shaped around ratings, fresh releases, and your profile.',
+      items: topPicks,
+      variant: 'default',
+    },
+    {
       key: 'continue-watching',
       title: 'Continue Watching',
       subtitle: 'Jump straight back into what you started.',
       items: pool.continueWatching,
-      variant: 'default',
-    },
-    {
-      key: 'top-picks',
-      title: 'Top Picks',
-      subtitle: 'A curated mix of fan favorites and critically loved titles.',
-      items: topPicks,
       variant: 'default',
     },
     {

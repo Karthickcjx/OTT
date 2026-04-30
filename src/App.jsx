@@ -6,6 +6,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import AdminLayout from './admin/components/AdminLayout';
 
 import Home from './pages/Home';
+import Catalog from './pages/Catalog';
 import MovieDetails from './pages/MovieDetails';
 import SeriesDetails from './pages/SeriesDetails';
 import WatchPage from './pages/WatchPage';
@@ -31,6 +32,8 @@ export default function App() {
           {/* Main site — public browse, protected profile/watch */}
           <Route element={<MainLayout />}>
             <Route path="/" element={<Home />} />
+            <Route path="/movies" element={<Catalog type="movies" />} />
+            <Route path="/series" element={<Catalog type="series" />} />
             <Route path="/movie/:id" element={<MovieDetails />} />
             <Route path="/series/:id" element={<SeriesDetails />} />
 

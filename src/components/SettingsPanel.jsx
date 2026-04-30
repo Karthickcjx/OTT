@@ -22,7 +22,7 @@ function Toggle({ checked, onChange }) {
       className={cx(
         'relative inline-flex h-7 w-12 items-center rounded-full border transition-all duration-300 ease-in-out',
         checked
-          ? 'border-sky-300/30 bg-sky-300/20'
+          ? 'border-fuchsia-300/30 bg-fuchsia-300/20'
           : 'border-white/10 bg-white/[0.05]',
       )}
       aria-pressed={checked}
@@ -39,9 +39,9 @@ function Toggle({ checked, onChange }) {
 
 function SettingsCard({ icon: Icon, title, description, children }) {
   return (
-    <section className="rounded-[28px] border border-white/10 bg-white/[0.04] p-5 backdrop-blur-xl">
+    <section className="rounded-xl border border-white/10 bg-white/[0.04] p-5 backdrop-blur-xl">
       <div className="flex items-start gap-4">
-        <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] text-sky-300">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/10 bg-white/[0.05] text-fuchsia-300">
           {createElement(Icon, { className: 'h-5 w-5' })}
         </div>
         <div className="min-w-0 flex-1">
@@ -94,7 +94,7 @@ export default function SettingsPanel({
             Settings
           </p>
           <h2 className="admin-display mt-3 text-3xl font-semibold text-white">
-            Stream Controls
+            Playnix Controls
           </h2>
           <div className="mt-10 space-y-3">
             {[
@@ -106,9 +106,9 @@ export default function SettingsPanel({
             ].map(({ label, icon: Icon }) => (
               <div
                 key={label}
-                className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-semibold text-slate-300"
+                className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-semibold text-slate-300"
               >
-                {createElement(Icon, { className: 'h-4 w-4 text-sky-300' })}
+                {createElement(Icon, { className: 'h-4 w-4 text-fuchsia-300' })}
                 {label}
               </div>
             ))}
@@ -132,7 +132,7 @@ export default function SettingsPanel({
             <button
               type="button"
               onClick={onClose}
-              className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-slate-300 transition-all duration-300 ease-in-out hover:border-white/20 hover:bg-white/[0.08] hover:text-white"
+              className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] text-slate-300 transition-all duration-300 ease-in-out hover:border-white/20 hover:bg-white/[0.08] hover:text-white"
               aria-label="Close settings"
             >
               <X className="h-4 w-4" />
@@ -149,15 +149,15 @@ export default function SettingsPanel({
                 {profiles.map((profile) => (
                   <div
                     key={profile.id}
-                    className="flex items-center gap-3 rounded-2xl border border-white/10 bg-slate-950/55 px-4 py-3"
+                    className="flex items-center gap-3 rounded-xl border border-white/10 bg-slate-950/55 px-4 py-3"
                   >
-                    <img src={profile.avatar} alt={profile.name} className="h-12 w-12 rounded-2xl border border-white/10 object-cover" />
+                    <img src={profile.avatar} alt={profile.name} className="h-12 w-12 rounded-xl border border-white/10 object-cover" />
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-semibold text-white">{profile.name}</p>
                       <p className="mt-1 text-xs text-slate-500 capitalize">{profile.type} profile</p>
                     </div>
                     {activeProfile?.id === profile.id && (
-                      <span className="rounded-full border border-sky-300/20 bg-sky-300/12 px-3 py-1 text-xs font-semibold text-sky-100">
+                      <span className="rounded-full border border-fuchsia-300/20 bg-fuchsia-300/12 px-3 py-1 text-xs font-semibold text-fuchsia-100">
                         Active
                       </span>
                     )}
@@ -196,9 +196,9 @@ export default function SettingsPanel({
                       type="button"
                       onClick={() => onUpdateSettings({ theme: value })}
                       className={cx(
-                        'inline-flex items-center justify-center gap-2 rounded-2xl border px-4 py-3 text-sm font-semibold transition-all duration-300 ease-in-out',
+                        'inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-semibold transition-all duration-300 ease-in-out',
                         active
-                          ? 'border-sky-300/25 bg-sky-300/14 text-white shadow-[0_0_24px_-16px_rgba(56,189,248,0.95)]'
+                          ? 'border-fuchsia-300/25 bg-fuchsia-300/14 text-white shadow-[0_0_24px_-16px_rgba(236,72,153,0.95)]'
                           : 'border-white/10 bg-white/[0.03] text-slate-400 hover:border-white/20 hover:bg-white/[0.06] hover:text-white',
                       )}
                     >
@@ -218,7 +218,7 @@ export default function SettingsPanel({
               <select
                 value={settings.language}
                 onChange={(event) => onUpdateSettings({ language: event.target.value })}
-                className="w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white outline-none transition-all duration-300 ease-in-out focus:border-sky-400/45 focus:shadow-[0_0_28px_-16px_rgba(56,189,248,0.95)]"
+                className="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white outline-none transition-all duration-300 ease-in-out focus:border-fuchsia-400/45 focus:shadow-[0_0_28px_-16px_rgba(236,72,153,0.95)]"
               >
                 {['English', 'Tamil', 'Hindi', 'Spanish'].map((language) => (
                   <option key={language} value={language}>
@@ -234,7 +234,7 @@ export default function SettingsPanel({
               description="Set how episodes and videos should behave during playback."
             >
               <div className="space-y-4">
-                <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-slate-950/55 px-4 py-3">
+                <div className="flex items-center justify-between rounded-xl border border-white/10 bg-slate-950/55 px-4 py-3">
                   <div>
                     <p className="text-sm font-semibold text-white">Auto-play next episode</p>
                     <p className="mt-1 text-xs text-slate-500">Automatically continue through a series.</p>
@@ -245,12 +245,12 @@ export default function SettingsPanel({
                   />
                 </div>
 
-                <div className="rounded-2xl border border-white/10 bg-slate-950/55 px-4 py-3">
+                <div className="rounded-xl border border-white/10 bg-slate-950/55 px-4 py-3">
                   <p className="text-sm font-semibold text-white">Preferred quality</p>
                   <select
                     value={settings.quality}
                     onChange={(event) => onUpdateSettings({ quality: event.target.value })}
-                    className="mt-3 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition-all duration-300 ease-in-out focus:border-sky-400/45"
+                    className="mt-3 w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm text-white outline-none transition-all duration-300 ease-in-out focus:border-fuchsia-400/45"
                   >
                     {['Auto', '4K', '1080p', '720p'].map((quality) => (
                       <option key={quality} value={quality}>
@@ -276,7 +276,7 @@ export default function SettingsPanel({
                     onClose();
                     onOpenAdmin();
                   }}
-                  className="inline-flex items-center gap-2 rounded-full border border-sky-300/20 bg-sky-300/12 px-5 py-3 text-sm font-semibold text-sky-100 transition-all duration-300 ease-in-out hover:border-sky-300/30 hover:bg-sky-300/18"
+                  className="inline-flex items-center gap-2 rounded-full border border-fuchsia-300/20 bg-fuchsia-300/12 px-5 py-3 text-sm font-semibold text-fuchsia-100 transition-all duration-300 ease-in-out hover:border-fuchsia-300/30 hover:bg-fuchsia-300/18"
                 >
                   <Shield className="h-4 w-4" />
                   Open Admin

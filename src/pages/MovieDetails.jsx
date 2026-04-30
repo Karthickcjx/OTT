@@ -54,7 +54,7 @@ export default function MovieDetails() {
         <p className="text-sm">{error.friendlyMessage || 'Something went wrong'}</p>
         <button
           onClick={() => navigate('/')}
-          className="mt-2 text-blue-400 hover:text-blue-300 text-sm"
+          className="mt-2 text-fuchsia-300 hover:text-white text-sm"
         >
           ← Back to Home
         </button>
@@ -127,18 +127,18 @@ export default function MovieDetails() {
           <div className="flex gap-3 flex-wrap">
             <button
               onClick={() => navigate(`/watch/${movie.id}`)}
-              className="flex items-center gap-2 bg-white hover:bg-gray-200 text-black font-semibold px-6 py-2.5 rounded-lg transition-all duration-200 hover:scale-105 active:scale-95"
+              className="playnix-button-primary flex items-center gap-2 px-6 py-2.5 rounded-full font-semibold transition-all duration-200 hover:scale-105 active:scale-95"
             >
               <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
                 <path d="M8 5v14l11-7z" />
               </svg>
-              Play
+              Watch Now
             </button>
             <button
               onClick={toggleWatchlist}
               className={`flex items-center gap-2 font-semibold px-6 py-2.5 rounded-lg border transition-all duration-200 hover:scale-105 active:scale-95 ${
                 inWatchlist
-                  ? 'bg-blue-600 border-blue-600 text-white'
+                  ? 'bg-fuchsia-500/18 border-fuchsia-300/35 text-white'
                   : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
               }`}
             >

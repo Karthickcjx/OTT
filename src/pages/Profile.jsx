@@ -19,7 +19,7 @@ function MediaTile({ item, showRemove, onRemove }) {
       className="group cursor-pointer"
       onClick={() => navigate(detailPath)}
     >
-      <div className="relative overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.05] aspect-[2/3] transition-all duration-300 ease-in-out group-hover:-translate-y-1 group-hover:scale-[1.02] group-hover:shadow-[0_28px_70px_-40px_rgba(15,23,42,0.96)]">
+      <div className="relative aspect-[2/3] overflow-hidden rounded-xl border border-white/10 bg-white/[0.05] transition-all duration-300 ease-in-out group-hover:-translate-y-1 group-hover:scale-[1.02] group-hover:border-fuchsia-300/25 group-hover:shadow-[0_28px_70px_-40px_rgba(236,72,153,0.62)]">
         <img
           src={getPosterArtwork(item)}
           alt={item.title}
@@ -53,7 +53,7 @@ function MediaTile({ item, showRemove, onRemove }) {
 
 function EmptyState({ icon: Icon, title, message, linkTo, linkLabel, isLight }) {
   return (
-    <div className="stream-card rounded-[34px] px-6 py-12 text-center">
+    <div className="stream-card rounded-xl px-6 py-12 text-center">
       <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-white/10 bg-white/[0.04]">
         {createElement(Icon, { className: 'h-7 w-7 text-slate-400' })}
       </div>
@@ -62,7 +62,7 @@ function EmptyState({ icon: Icon, title, message, linkTo, linkLabel, isLight }) 
       {linkTo && (
         <Link
           to={linkTo}
-          className="mt-6 inline-flex items-center rounded-full bg-gradient-to-r from-sky-400 via-blue-500 to-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-[0_20px_42px_-20px_rgba(59,130,246,0.95)] transition-all duration-300 ease-in-out hover:-translate-y-0.5"
+          className="playnix-button-primary mt-6 inline-flex items-center rounded-full px-5 py-3 text-sm font-semibold transition-all duration-300 ease-in-out hover:-translate-y-0.5"
         >
           {linkLabel}
         </Link>
@@ -122,13 +122,13 @@ export default function Profile() {
   return (
     <div className="px-4 pb-16 pt-28 sm:px-6 lg:px-10">
       <div className="mx-auto max-w-[1500px] space-y-8">
-        <section className="stream-card rounded-[36px] p-6 sm:p-8">
+        <section id="profile" className="stream-card scroll-mt-28 rounded-xl p-6 sm:p-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex flex-wrap items-center gap-4">
               <img
                 src={activeProfile?.avatar}
                 alt={activeProfile?.name}
-                className="h-20 w-20 rounded-[28px] border border-white/10 object-cover"
+                className="h-20 w-20 rounded-xl border border-white/10 object-cover"
               />
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[0.32em] text-slate-500">
@@ -148,7 +148,7 @@ export default function Profile() {
                 <button
                   type="button"
                   onClick={() => navigate('/admin')}
-                  className="inline-flex items-center gap-2 rounded-full border border-sky-300/20 bg-sky-300/12 px-5 py-3 text-sm font-semibold text-sky-100 transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:border-sky-300/30 hover:bg-sky-300/18"
+                  className="inline-flex items-center gap-2 rounded-full border border-fuchsia-300/20 bg-fuchsia-300/12 px-5 py-3 text-sm font-semibold text-fuchsia-100 transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:border-fuchsia-300/30 hover:bg-fuchsia-300/18"
                 >
                   <Shield className="h-4 w-4" />
                   Admin
@@ -170,19 +170,19 @@ export default function Profile() {
           </div>
 
           <div className="mt-6 grid gap-3 sm:grid-cols-3">
-            <div className="rounded-[24px] border border-white/10 bg-white/[0.04] px-4 py-3">
+            <div className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3">
               <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-500">
                 Theme
               </p>
               <p className={cx('mt-2 text-sm font-semibold capitalize', isLight ? 'text-slate-900' : 'text-white')}>{settings.theme}</p>
             </div>
-            <div className="rounded-[24px] border border-white/10 bg-white/[0.04] px-4 py-3">
+            <div className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3">
               <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-500">
                 Watchlist
               </p>
               <p className={cx('mt-2 text-sm font-semibold', isLight ? 'text-slate-900' : 'text-white')}>{filteredWatchlist.length} titles</p>
             </div>
-            <div className="rounded-[24px] border border-white/10 bg-white/[0.04] px-4 py-3">
+            <div className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3">
               <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-500">
                 Recent activity
               </p>
@@ -191,7 +191,7 @@ export default function Profile() {
           </div>
         </section>
 
-        <div className="inline-flex rounded-full border border-white/10 bg-white/[0.04] p-1">
+        <div id="my-list" className="inline-flex scroll-mt-28 rounded-full border border-white/10 bg-white/[0.04] p-1">
           {tabs.map(({ id, label, icon: Icon }) => {
             const active = tab === id;
 

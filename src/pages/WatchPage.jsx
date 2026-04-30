@@ -13,7 +13,7 @@ import { cx } from '../admin/utils/cx';
 function MovieWatchLayout({ content, similar }) {
   return (
     <>
-      <div className="overflow-hidden rounded-[32px] border border-white/10 bg-slate-950/72 shadow-[0_36px_90px_-52px_rgba(15,23,42,0.98)]">
+      <div className="overflow-hidden rounded-xl border border-white/10 bg-[#0b0b0f]/80 shadow-[0_36px_90px_-52px_rgba(0,0,0,0.98)]">
         <VideoPlayer title={content.title} videoUrl={content.videoUrl} posterUrl={getPosterArtwork(content)} />
       </div>
 
@@ -85,7 +85,7 @@ function SeriesWatchLayout({
   return (
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
       <div className="min-w-0">
-        <div className="overflow-hidden rounded-[32px] border border-white/10 bg-slate-950/72 shadow-[0_36px_90px_-52px_rgba(15,23,42,0.98)]">
+        <div className="overflow-hidden rounded-xl border border-white/10 bg-[#0b0b0f]/80 shadow-[0_36px_90px_-52px_rgba(0,0,0,0.98)]">
           <VideoPlayer
             title={episodeTitle}
             videoUrl={currentEpisode?.videoUrl}
@@ -106,7 +106,7 @@ function SeriesWatchLayout({
               <button
                 type="button"
                 onClick={handleAutoplayNext}
-                className="inline-flex items-center gap-2 rounded-full border border-sky-300/20 bg-sky-300/12 px-3 py-1.5 text-xs font-semibold text-sky-100 transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:border-sky-300/30 hover:bg-sky-300/18"
+                className="inline-flex items-center gap-2 rounded-full border border-fuchsia-300/20 bg-fuchsia-300/12 px-3 py-1.5 text-xs font-semibold text-fuchsia-100 transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:border-fuchsia-300/30 hover:bg-fuchsia-300/18"
               >
                 <PlayCircle className="h-3.5 w-3.5" />
                 {autoplayLabel}
@@ -213,7 +213,7 @@ export default function WatchPage() {
           <MovieWatchLayout content={content} similar={similar} />
         )}
 
-        <div className="mt-5 rounded-[24px] border border-white/10 bg-white/[0.04] px-4 py-3 text-center text-xs text-slate-500">
+        <div className="mt-5 rounded-lg border border-white/10 bg-white/[0.04] px-4 py-3 text-center text-xs text-slate-500">
           Demo player mode: connect a real `videoUrl` source when you are ready for production playback.
         </div>
       </div>

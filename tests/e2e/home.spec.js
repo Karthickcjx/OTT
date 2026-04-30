@@ -25,7 +25,6 @@ test.describe('Home — Unauthenticated', () => {
 
   test('Profile avatar is NOT visible', async ({ page }) => {
     // The profile switcher button (shows avatar image) must not exist
-    const avatar = page.locator('img[alt]').filter({ hasText: '' }).first();
     // Avatar in the profile button has a rounded-full class
     const profileBtn = page.locator('button').filter({ has: page.locator('img.rounded-full') });
     await expect(profileBtn).not.toBeVisible();
@@ -40,9 +39,6 @@ test.describe('Home — Unauthenticated', () => {
   test('Profile name badge is NOT visible in the hero banner', async ({ page }) => {
     // The banner shows the activeProfile.name in a small badge — should be hidden when logged out
     // It sits alongside the "Series Premiere" or "Featured Tonight" badge
-    const heroBadges = page.locator('section').first().locator('span');
-    const texts = await heroBadges.allInnerTexts();
-
     // None of the banner badge texts should look like a user profile name
     // The avatar image inside the badge is only rendered when isAuthenticated
     const avatarInBanner = page.locator('section').first().locator('img.rounded-full');
@@ -58,7 +54,7 @@ test.describe('Home — Unauthenticated', () => {
     // Content rows are visible even without login (populated from backend)
     // If backend has no data the row won't render — that is expected
     // We just assert the page loads without crashing
-    await expect(page).toHaveTitle(/streamvault/i);
+    await expect(page).toHaveTitle(/playnix/i);
     await expect(page.locator('nav')).toBeVisible();
   });
 });

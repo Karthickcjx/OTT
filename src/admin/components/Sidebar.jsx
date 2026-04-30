@@ -7,12 +7,12 @@ import {
   Film,
   LayoutDashboard,
   LogOut,
-  Play,
   Shield,
   Tv,
   Users,
 } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
+import PlaynixLogo from '../../components/PlaynixLogo';
 import { cx } from '../utils/cx';
 
 const NAV_GROUPS = [
@@ -99,12 +99,10 @@ export default function Sidebar({ collapsed, onToggle }) {
 
       <div className={cx('flex items-center border-b border-white/10 px-4 py-5', collapsed ? 'justify-center' : 'justify-between gap-3')}>
         <div className={cx('flex items-center gap-3', collapsed ? 'justify-center' : '')}>
-          <div className="grid h-11 w-11 place-items-center rounded-2xl border border-white/15 bg-gradient-to-br from-sky-400 via-blue-500 to-indigo-600 text-white shadow-[0_16px_36px_-18px_rgba(59,130,246,0.95)]">
-            <Play className="h-5 w-5 fill-current" />
-          </div>
+          <PlaynixLogo size="md" showWordmark={false} />
           {!collapsed && (
             <div>
-              <p className="admin-display text-base font-semibold text-white">StreamVault</p>
+              <p className="admin-display text-base font-semibold text-white">Playnix</p>
               <p className="text-xs font-medium uppercase tracking-[0.28em] text-slate-500">
                 Admin Suite
               </p>
