@@ -102,7 +102,7 @@ npm run dev
 
 ---
 
-### 4️⃣ Database Setup (MySQL)
+### 4️⃣ Admin Panel
 
 * Admin credentials:
 
